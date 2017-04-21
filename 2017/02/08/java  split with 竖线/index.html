@@ -377,7 +377,7 @@
 <p> [1, 2, 3, 4, 5, 6, |, 7, 8, 9]<br>而不是我们期望的[123456, 789]</p>
 </blockquote>
 <h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>因为|在正则表达式中表示或者的意思，上边代码的意思是用空字符串或者空字符串进行分割，即同phone.split(“”)一样    </p>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>只需对|进行转义即可，因为\在Java中也是一个特殊字符，需要用\\|对|进行转义<br>或者用Pattern.quote(“|”)来给加上转义字符</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>只需对|进行转义即可，因为\在Java中也是一个特殊字符，需要用\\\|对|进行转义<br>或者用Pattern.quote(“|”)来给加上转义字符</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Split</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String phone = <span class="string">"123456|789"</span>;</div><div class="line">        <span class="comment">//List&lt;String&gt; phones = Arrays.asList(phone.split"\\|");</span></div><div class="line">        List&lt;String&gt; phones = Arrays.asList(phone.split(Pattern.quote(<span class="string">"|"</span>)));</div><div class="line">        System.out.println(phones);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
       
