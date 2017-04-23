@@ -88,17 +88,17 @@
 
 
 
-<meta name="description" content="在Java中，对字符串进行spilt要特别注意，split里边的参数是一个正则表达式，如果参数是|，因为|在正则表达式里边是一个特殊字符，所以需要进行转义，否则结果跟预期的不符，例如 1234567public class Split &amp;#123;    public static void main(String[] args) &amp;#123;        String phone = &quot;123">
+<meta name="description" content="在Java中，对字符串进行spilt要特别注意，split里边的参数是一个正则表达式，如果参数是|，因为|在正则表达式里边是一个特殊字符，所以需要进行转义，否则结果跟预期的不符，例如 1234567public class Split &amp;#123;    public static void main(String[] args) &amp;#123;        String phone = &quot;12">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java中用竖线|对字符串split">
 <meta property="og:url" content="http://yoursite.com/2017/02/08/java  split with 竖线/index.html">
 <meta property="og:site_name" content="欢迎光临我的技术博客">
-<meta property="og:description" content="在Java中，对字符串进行spilt要特别注意，split里边的参数是一个正则表达式，如果参数是|，因为|在正则表达式里边是一个特殊字符，所以需要进行转义，否则结果跟预期的不符，例如 1234567public class Split &amp;#123;    public static void main(String[] args) &amp;#123;        String phone = &quot;123">
+<meta property="og:description" content="在Java中，对字符串进行spilt要特别注意，split里边的参数是一个正则表达式，如果参数是|，因为|在正则表达式里边是一个特殊字符，所以需要进行转义，否则结果跟预期的不符，例如 1234567public class Split &amp;#123;    public static void main(String[] args) &amp;#123;        String phone = &quot;12">
 <meta property="og:updated_time" content="2017-03-10T07:51:08.833Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java中用竖线|对字符串split">
-<meta name="twitter:description" content="在Java中，对字符串进行spilt要特别注意，split里边的参数是一个正则表达式，如果参数是|，因为|在正则表达式里边是一个特殊字符，所以需要进行转义，否则结果跟预期的不符，例如 1234567public class Split &amp;#123;    public static void main(String[] args) &amp;#123;        String phone = &quot;123">
+<meta name="twitter:description" content="在Java中，对字符串进行spilt要特别注意，split里边的参数是一个正则表达式，如果参数是|，因为|在正则表达式里边是一个特殊字符，所以需要进行转义，否则结果跟预期的不符，例如 1234567public class Split &amp;#123;    public static void main(String[] args) &amp;#123;        String phone = &quot;12">
 
 
 
@@ -372,12 +372,13 @@
       
         <p>在Java中，对字符串进行spilt要特别注意，split里边的参数是一个正则表达式，如果参数是|，因为|在正则表达式里边是一个特殊字符，所以需要进行转义，否则结果跟预期的不符，例如</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Split</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String phone = <span class="string">"123456|789"</span>;</div><div class="line">        List&lt;String&gt; phones = Arrays.asList(phone.split(<span class="string">"|"</span>));</div><div class="line">        System.out.println(phones);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>输出结果是：</p>
-<blockquote>
-<p> [1, 2, 3, 4, 5, 6, |, 7, 8, 9]<br>而不是我们期望的[123456, 789]</p>
-</blockquote>
-<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>因为|在正则表达式中表示或者的意思，上边代码的意思是用空字符串或者空字符串进行分割，即同phone.split(“”)一样    </p>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>只需对|进行转义即可，因为\在Java中也是一个特殊字符，需要用\\\|对|进行转义<br>或者用Pattern.quote(“|”)来给加上转义字符</p>
+<p>输出结果是： &gt; [1, 2, 3, 4, 5, 6, |, 7, 8, 9]<br>
+而不是我们期望的[123456, 789]</p>
+<h2 id="原因">原因</h2>
+<p>因为|在正则表达式中表示或者的意思，上边代码的意思是用空字符串或者空字符串进行分割，即同phone.split(“”)一样</p>
+<h2 id="解决">解决</h2>
+<p>只需对|进行转义即可，因为，需要用\\|对|进行转义<br>
+或者用Pattern.quote(“|”)来给加上转义字符</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Split</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String phone = <span class="string">"123456|789"</span>;</div><div class="line">        <span class="comment">//List&lt;String&gt; phones = Arrays.asList(phone.split"\\|");</span></div><div class="line">        List&lt;String&gt; phones = Arrays.asList(phone.split(Pattern.quote(<span class="string">"|"</span>)));</div><div class="line">        System.out.println(phones);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
       

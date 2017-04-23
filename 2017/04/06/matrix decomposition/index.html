@@ -110,7 +110,7 @@
 <meta property="og:image" content="http://yoursite.com/img/11.jpg">
 <meta property="og:image" content="http://yoursite.com/img/12.jpg">
 <meta property="og:image" content="http://yoursite.com/img/13.jpg">
-<meta property="og:updated_time" content="2017-04-23T07:01:19.358Z">
+<meta property="og:updated_time" content="2017-04-23T07:33:11.972Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="矩阵分解及其应用">
 <meta name="twitter:description" content="预备   定义1，给定一个由\(n\)维向量集合组成的集合\(V\)，如果集合\(V\)非空并且对于任意集合\(V\)中的向量，满足如下两个条件    若\(a\in V,b\in V\) ,则\(a+b\in V\)；  若\(a\in V,\lambda \in R\)，则\(\lambda a \in V\)； 则称集合\(V\)为向量空间   定义1说明在向量空间">
@@ -388,16 +388,10 @@
 则称向量组<span class="math inline">\(a_{1},a_{2}，\cdots，a_{n}\)</span>为向量空间<span class="math inline">\(V\)</span>的一个基，<span class="math inline">\(n\)</span>称为向量空间<span class="math inline">\(V\)</span>的维数</li>
 </ul>
 </blockquote>
-给定向量空间<span class="math inline">\(V\)</span>下的一个向量<span class="math inline">\(x\)</span>，如果存在<br>
-
-<center>
-<span class="math inline">\(x=\lambda_{1}a_{1}+\lambda_{2}a_{2}+\cdots+\lambda_{n}a_{n}\)</span>
-</center>
-则称数组<span class="math inline">\(\lambda_{1},\lambda_{2},\cdots,\lambda_{n}\)</span>为向量<span class="math inline">\(x\)</span>在基<span class="math inline">\(a_{1},a_{2}，\cdots，a_{n}\)</span>下的坐标，向量<span class="math inline">\(x\)</span>在基<span class="math inline">\(a_{1},a_{2}，\cdots，a_{n}\)</span>下可以表示为<br>
-
-<center>
-<span class="math inline">\(x=[\lambda_{1}, \lambda_{2},\cdots,\lambda_{n}]\)</span>
-</center>
+<p>给定向量空间<span class="math inline">\(V\)</span>下的一个向量<span class="math inline">\(x\)</span>，如果存在<br>
+<span class="math display">\[x=\lambda_{1}a_{1}+\lambda_{2}a_{2}+\cdots+\lambda_{n}a_{n} \tag{1}\]</span></p>
+<p>则称数组<span class="math inline">\(\lambda_{1},\lambda_{2},\cdots,\lambda_{n}\)</span>为向量<span class="math inline">\(x\)</span>在基<span class="math inline">\(a_{1},a_{2}，\cdots，a_{n}\)</span>下的坐标，向量<span class="math inline">\(x\)</span>在基<span class="math inline">\(a_{1},a_{2}，\cdots，a_{n}\)</span>下可以表示为<br>
+<span class="math display">\[x=[\lambda_{1}, \lambda_{2},\cdots,\lambda_{n}] \tag{2}\]</span></p>
 <blockquote>
 <ul>
 <li>定义3，自然基，在<span class="math inline">\(n\)</span>维向量空间中取单位坐标向量组<span class="math inline">\(e_{1},e_{2},\cdots e_{n}\)</span>作为基，向量空间中的任一向量可以表示为<span class="math inline">\(x=x_{1}e_{1} + x_{2}e_{2}+ \cdots + x_{n}e_{n}\)</span>,称<span class="math inline">\(e_{1},e_{2},\cdots e_{n}\)</span>为自然基，向量<span class="math inline">\(x=[x_{1},x_{2},\cdots,x_{n}]\)</span></li>
@@ -409,114 +403,116 @@
 <li>定义4，正交矩阵，如果一个<span class="math inline">\(n\)</span>阶方阵满足<span class="math inline">\(A^TA=E(即A^{-1}=A^T)\)</span>，则称方阵<span class="math inline">\(A\)</span>为正交矩阵</li>
 </ul>
 </blockquote>
-从正交矩阵的定义，可以导出正交矩阵行矩阵或列矩阵两两正交且模为1，假设<span class="math inline">\(A\)</span>列矩阵为<br>
-
-<center>
-$A^{T}A=
-<span class="math display">\[\begin{bmatrix}
+<p>从正交矩阵的定义，可以导出正交矩阵行矩阵或列矩阵两两正交且模为1，假设<span class="math inline">\(A\)</span>列矩阵为<br>
+<span class="math display">\[A^{T}A=\begin{bmatrix}
 x_{1}^{T}\\ 
 x_{2}^{T}\\ 
 \vdots\\ 
 x_{n}^{T}
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 x_{1} &amp;x_{2}  &amp; \cdots  &amp; x_{n} 
-\end{bmatrix}\]</span>
+\end{bmatrix}
 =
-<span class="math display">\[\begin{bmatrix}
+\begin{bmatrix}
 1 &amp; 0 &amp;  0&amp; 0\\ 
 0 &amp; 1 &amp;  0&amp; 0\\ 
 \vdots &amp;  \vdots&amp; \vdots &amp; \vdots\\ 
  0&amp; 0 &amp; 0 &amp; 1
-\end{bmatrix}\]</span>
-a_{i}^{T}a_{j}=_{ij} = {
-<span class="math display">\[\begin{matrix}
+\end{bmatrix}
+\Longrightarrow
+a_{i}^{T}a_{j}=\delta_{ij}
+=
+\left\{\begin{matrix}
 1,如果i=j\\ 
 0,否则i\ne j
-\end{matrix}\]</span>
-. $
-</center>
+\end{matrix}\right. \tag{3}
+\]</span></p>
 <blockquote>
 <ul>
 <li>定义5，称变换<span class="math inline">\(T\)</span>是线性的，如果<br>
-1）对于<span class="math inline">\(T\)</span>定义域内的一切<span class="math inline">\(u,v\)</span>，<span class="math inline">\(T(u+v)=T(u)+T(v)\)</span><br>
+1、对于<span class="math inline">\(T\)</span>定义域内的一切<span class="math inline">\(u,v\)</span>，<span class="math inline">\(T(u+v)=T(u)+T(v)\)</span><br>
+2、对一切<span class="math inline">\(u\)</span>和标量c，<span class="math inline">\(T(cu)=cT(u)\)</span><br>
 </li>
-</ul>
-<ol start="2" style="list-style-type: decimal">
-<li>对一切<span class="math inline">\(u\)</span>和标量c，<span class="math inline">\(T(cu)=cT(u)\)</span><br>
-</li>
-</ol>
-<ul>
 <li>定义6，矩阵变换，称一个矩阵乘以一个向量为一个矩阵变换，记作<span class="math inline">\(x\to Ax\)</span></li>
 </ul>
 </blockquote>
 <p>一个变换就是一个映射，由定义可以看出，矩阵变换<span class="math inline">\(x\to Ax\)</span>是一个线性变换</p>
 <h2 id="矩阵的几何意义">矩阵的几何意义</h2>
-我们知道对于一个向量，给定一组基下就会有一个坐标唯一描述这个向量，假如有两个基描述这个向量，这两个基有什么关系呢？假设向量空间<span class="math inline">\(V\)</span>有两组基<span class="math inline">\(a_{1},a_{2},\cdots,a_{n}和b_{1},b_{2},\cdots,b_{n}\)</span>，则基<span class="math inline">\(b\)</span>可以由<span class="math inline">\(a\)</span>来表示，即有
-<center>
-<span class="math inline">\(\left\{\begin{matrix} b_{1}=p_{11}a_{1}+p_{21}a_{2}+\cdots +p_{n1}a_{n}\\ b_{2}=p_{12}a_{1}+p_{22}a_{2}+\cdots +p_{n2}a_{n}\\ \cdots \\ b_{n}=p_{1n}a_{1}+p_{2n}a_{2}+\cdots +p_{nn}a_{n} \end{matrix}\right.\)</span>
-</center>
-写成矩阵形式，则有
-<center>
-$
-<span class="math display">\[\begin{bmatrix}
+<p>我们知道对于一个向量，给定一组基下就会有一个坐标唯一描述这个向量，假如有两个基描述这个向量，这两个基有什么关系呢？假设向量空间<span class="math inline">\(V\)</span>有两组基<span class="math inline">\(a_{1},a_{2},\cdots,a_{n}和b_{1},b_{2},\cdots,b_{n}\)</span>，则基<span class="math inline">\(b\)</span>可以由<span class="math inline">\(a\)</span>来表示，即有 <span class="math display">\[\left\{\begin{matrix}
+b_{1}=p_{11}a_{1}+p_{21}a_{2}+\cdots +p_{n1}a_{n}\\ 
+b_{2}=p_{12}a_{1}+p_{22}a_{2}+\cdots +p_{n2}a_{n}\\ 
+\cdots \\ 
+b_{n}=p_{1n}a_{1}+p_{2n}a_{2}+\cdots +p_{nn}a_{n}
+\end{matrix}\right. \tag{4}\]</span></p>
+<p>写成矩阵形式，则有 <span class="math display">\[\begin{bmatrix}
 b_{1}\\ 
 b_{2}\\ 
 \vdots\\ 
 b_{n}
-\end{bmatrix}\]</span>
+\end{bmatrix}
 =
-<span class="math display">\[\begin{bmatrix}
+\begin{bmatrix}
 p_{11} &amp; p_{21} &amp; \cdots &amp; p_{n1}\\ 
 p_{12} &amp; p_{22} &amp; \cdots &amp; p_{n2}\\ 
 \vdots &amp; \vdots &amp; \vdots &amp; \vdots\\ 
 p_{1n} &amp; p_{n2} &amp; \cdots &amp; p_{nn}
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 a_{1}\\ 
 a_{2}\\ 
 \vdots\\ 
 a_{n}
-\end{bmatrix}\]</span>
+\end{bmatrix}
 =P^{T}
-<span class="math display">\[\begin{bmatrix}
+\begin{bmatrix}
 a_{1}\\ 
 a_{2}\\ 
 \vdots\\ 
 a_{n}
-\end{bmatrix}\]</span>
-$
-</center>
+\end{bmatrix} \tag{5}
+\]</span></p>
 <p>称矩阵<span class="math inline">\(P\)</span>为从基<span class="math inline">\(a\)</span>到基<span class="math inline">\(b\)</span>的过渡矩阵,因为基是线性无关的，因此矩阵<span class="math inline">\(P\)</span>是可逆的，也就是说，两个基之间可以通过一个矩阵来转换。</p>
 <blockquote>
 <ul>
-<li>定理1，设<span class="math inline">\(V_{n}\)</span>中的一个向量<span class="math inline">\(r\)</span>,在基<span class="math inline">\(a_{1},a_{2},\cdots,a_{n}\)</span>下的坐标为<span class="math inline">\([ x_{1},x_{2},\cdots,x_{n}]\)</span>，在基<span class="math inline">\(b_{1},b_{2},\cdots,b_{n}\)</span>下的坐标为<span class="math inline">\([x_{1}&#39;,x_{2}&#39;,\cdots,x_{n}&#39;]\)</span>，矩阵<span class="math inline">\(P\)</span>为从基<span class="math inline">\(a\)</span>到基<span class="math inline">\(b\)</span>的过渡矩阵，则有坐标变换公式
-<center>
-<span class="math inline">\(\begin{bmatrix} x_{1}\\ x_{2}\\ \vdots\\ x_{n} \end{bmatrix} = P \begin{bmatrix} x_{1}&#39;\\ x_{2}&#39;\\ \vdots\\ x_{n}&#39; \end{bmatrix}\)</span>
-</center></li>
+<li>定理1，设<span class="math inline">\(V_{n}\)</span>中的一个向量<span class="math inline">\(r\)</span>,在基<span class="math inline">\(a_{1},a_{2},\cdots,a_{n}\)</span>下的坐标为<span class="math inline">\([ x_{1},x_{2},\cdots,x_{n}]\)</span>，在基<span class="math inline">\(b_{1},b_{2},\cdots,b_{n}\)</span>下的坐标为<span class="math inline">\([x_{1}&#39;,x_{2}&#39;,\cdots,x_{n}&#39;]\)</span>，矩阵<span class="math inline">\(P\)</span>为从基<span class="math inline">\(a\)</span>到基<span class="math inline">\(b\)</span>的过渡矩阵，则有坐标变换公式 <span class="math display">\[\begin{bmatrix}
+x_{1}\\ 
+x_{2}\\ 
+\vdots\\ 
+x_{n}
+\end{bmatrix}
+=
+P
+\begin{bmatrix}
+x_{1}&#39;\\ 
+x_{2}&#39;\\ 
+\vdots\\ 
+x_{n}&#39;
+\end{bmatrix} \tag{6}\]</span></li>
 </ul>
 </blockquote>
-来看一个特殊的情况，假设基向量<span class="math inline">\(a\)</span>为自然基，则有
-<center>
-$
-<span class="math display">\[\begin{bmatrix}
+<p>来看一个特殊的情况，假设基向量<span class="math inline">\(a\)</span>为自然基，则有</p>
+<p><span class="math display">\[\begin{bmatrix}
 b_{1}\\ 
 b_{2}\\ 
 \vdots\\ 
 b_{n}
-\end{bmatrix}\]</span>
+\end{bmatrix}
 =
-<span class="math display">\[\begin{bmatrix}
+\begin{bmatrix}
 p_{11} &amp; p_{21} &amp; \cdots &amp; p_{n1}\\ 
 p_{12} &amp; p_{22} &amp; \cdots &amp; p_{n2}\\ 
 \vdots &amp; \vdots &amp; \vdots &amp; \vdots\\ 
 p_{1n} &amp; p_{n2} &amp; \cdots &amp; p_{nn}
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 a_{1}\\ 
 a_{2}\\ 
 \vdots\\ 
 a_{n}
-\end{bmatrix}\]</span>
-=P^{T} $
-</center>
+\end{bmatrix}
+=P^{T} \tag{7}
+\]</span></p>
 因此，一个向量在标准坐标系下坐标为<span class="math inline">\(x=[x_{1},x_{2},\cdots,x_{n}]\)</span>,在基<span class="math inline">\(b\)</span>下的坐标为<span class="math inline">\(x&#39;=x^{T}[b_{1}^{T},b_{2}^{T},\cdots,b_{n}^{T}]\)</span>,公式也可以写作
 <center>
 <span class="math inline">\(EX^{T}=BX&#39;^{T}\)</span>
