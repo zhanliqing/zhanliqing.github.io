@@ -502,55 +502,44 @@ a_{n}
 \end{bmatrix}
 =P^{T} \tag{7}
 \]</span></p>
-因此，一个向量在标准坐标系下坐标为<span class="math inline">\(x=[x_{1},x_{2},\cdots,x_{n}]\)</span>,在基<span class="math inline">\(b\)</span>下的坐标为<span class="math inline">\(x&#39;=x^{T}[b_{1}^{T},b_{2}^{T},\cdots,b_{n}^{T}]\)</span>,公式也可以写作
-<center>
-<span class="math inline">\(EX^{T}=BX&#39;^{T}\)</span>
-</center>
-<p>也就是矩阵乘法<span class="math inline">\(AX=b\)</span>可以认为是在标准坐标系下坐标是<span class="math inline">\(b\)</span>，在<span class="math inline">\(A\)</span>组成的基下的坐标是<span class="math inline">\(x\)</span></p>
+<p>因此，一个向量在标准坐标系下坐标为<span class="math inline">\(x=[x_{1},x_{2},\cdots,x_{n}]\)</span>,在基<span class="math inline">\(b\)</span>下的坐标为<span class="math inline">\(x&#39;=x^{T}[b_{1}^{T},b_{2}^{T},\cdots,b_{n}^{T}]\)</span>,公式也可以写作 <span class="math display">\[EX^{T}=BX&#39;^{T} \tag{8}\]</span> 也就是矩阵乘法<span class="math inline">\(AX=b\)</span>可以认为是在标准坐标系下坐标是<span class="math inline">\(b\)</span>，在<span class="math inline">\(A\)</span>组成的基下的坐标是<span class="math inline">\(x\)</span></p>
 <p>给定一个矩阵<span class="math inline">\(A\)</span>,矩阵<span class="math inline">\(Ax\)</span>可以看成一个基变换，如果认为基变换前后是同一个基，则可以认为<span class="math inline">\(Ax\)</span>是对向量进行角度及长度的变换，矩阵可以认为是一个线性变换，也就是变换基坐标和变换向量是相对的</p>
-下面用二维图示进行说明，给定一个二维对角矩阵
-<center>
-<span class="math inline">\(M=\begin{bmatrix} 3 &amp; 0\\ 0 &amp; 1 \end{bmatrix}\)</span>
-</center>
-从几何上讲，<span class="math inline">\(M\)</span>是将二维平面上的点<span class="math inline">\((x,y)\)</span>经过线性变换到另外一个点的变换矩阵
-<center>
-$M=
-<span class="math display">\[\begin{bmatrix}
+<p>下面用二维图示进行说明，给定一个二维对角矩阵 <span class="math display">\[M=\begin{bmatrix}
 3 &amp; 0\\ 
 0 &amp; 1
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix} \tag{9}\]</span> 从几何上讲，<span class="math inline">\(M\)</span>是将二维平面上的点<span class="math inline">\((x,y)\)</span>经过线性变换到另外一个点的变换矩阵</p>
+<span class="math display">\[M=\begin{bmatrix}
+3 &amp; 0\\ 
+0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
 x\\ 
 y
-\end{bmatrix}\]</span>
+\end{bmatrix}
 =
-<span class="math display">\[\begin{bmatrix}
+\begin{bmatrix}
 3x\\ 
 y
-\end{bmatrix}\]</span>
-$
-</center>
-变换的效果如下图所示，变换后的平面仅仅是沿 X 水平方面进行了拉伸3倍，垂直方向是并没有发生变化。
+\end{bmatrix} \tag{10}
+\]</span> 变换的效果如下图所示，变换后的平面仅仅是沿 X 水平方面进行了拉伸3倍，垂直方向是并没有发生变化。
 <center>
 <img src="/img/1.jpg">
 </center>
-现在看下矩阵
-<center>
-$M=
-<span class="math display">\[\begin{bmatrix}
+<p>现在看下矩阵</p>
+<span class="math display">\[M=\begin{bmatrix}
 2 &amp; 1\\ 
 1 &amp; 2
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 x\\ 
 y
-\end{bmatrix}\]</span>
+\end{bmatrix}
 =
-<span class="math display">\[\begin{bmatrix}
+\begin{bmatrix}
 2x+y\\ 
 x+2y
-\end{bmatrix}\]</span>
-$
-</center>
-这个矩阵产生的变换效果如下图所示
+\end{bmatrix} \tag{11}
+\]</span> 这个矩阵产生的变换效果如下图所示
 <center>
 <img src="/img/2.jpg">
 </center>
@@ -565,18 +554,16 @@ $
 <li>定理二，若<span class="math inline">\(P\)</span>为正交矩阵，则线性变换<span class="math inline">\(y=Px\)</span>称为正交变换，并且变换后向量大小不变</li>
 </ul>
 </blockquote>
-向量是否拉伸可以通过向量的2阶范数来反映，即
-<center>
-<span class="math inline">\(\parallel y \parallel =\sqrt{y^{T}y}=\sqrt{x^{T}P^{T}Px}=\sqrt{x^{T}x}=\parallel x \parallel\)</span>
-</center>
+<p>向量是否拉伸可以通过向量的2阶范数来反映，即</p>
+<p><span class="math display">\[\parallel y \parallel =\sqrt{y^{T}y}=\sqrt{x^{T}P^{T}Px}=\sqrt{x^{T}x}=\parallel x \parallel \tag{12}\]</span></p>
 <p>下面以一个图示来演示正交变换,假设二维空间中的一个向量<span class="math inline">\(OA\)</span>，它在标准坐标系也即<span class="math inline">\(e1、e2\)</span>表示的坐标是中表示为<span class="math inline">\((a,b)^{T}\)</span>，现在把它用另一组坐标<span class="math inline">\(e1&#39;、e2&#39;\)</span>表示为<span class="math inline">\((a&#39;,b&#39;)^{T}\)</span>，存在矩阵<span class="math inline">\(U\)</span>使得<span class="math inline">\(U(a&#39;,b&#39;)^{T}=(a,b)^{T}\)</span></p>
 <center>
 <img src="/img/4.jpg">
 </center>
-容易求出<span class="math inline">\(U\)</span>，其中<span class="math inline">\(e_{1}&#39;=[\cos\theta,\sin\theta]^{T}，e_{2}&#39;=[-\sin\theta,\cos\theta]\)</span>，因此
-<center>
-<span class="math inline">\(U=\begin{bmatrix} \cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta \end{bmatrix}\)</span>
-</center>
+<p>容易求出<span class="math inline">\(U\)</span>，其中<span class="math inline">\(e_{1}&#39;=[\cos\theta,\sin\theta]^{T}，e_{2}&#39;=[-\sin\theta,\cos\theta]\)</span>，因此 <span class="math display">\[U=\begin{bmatrix}
+\cos\theta &amp; -\sin\theta\\ 
+\sin\theta &amp; \cos\theta 
+\end{bmatrix} \tag{13}\]</span></p>
 下图展示了基变换和向量方向变换的等价
 <center>
 <img src="/img/5.jpg">
@@ -585,25 +572,13 @@ $
 <h2 id="方阵的特征值及特征向量">方阵的特征值及特征向量</h2>
 <blockquote>
 <ul>
-<li>定义7，设<span class="math inline">\(A\)</span>是<span class="math inline">\(n\)</span>阶矩阵，如果<span class="math inline">\(\lambda\)</span>和<span class="math inline">\(n\)</span>维非零列向量<span class="math inline">\(x\)</span>满足如下关系
-<center>
-<span class="math inline">\(Ax=\lambda x\)</span>
-</center>
-则称<span class="math inline">\(\lambda\)</span>为矩阵<span class="math inline">\(A\)</span>的特征值，向量<span class="math inline">\(x\)</span>为矩阵<span class="math inline">\(A\)</span>的特征向量</li>
+<li>定义7，设<span class="math inline">\(A\)</span>是<span class="math inline">\(n\)</span>阶矩阵，如果<span class="math inline">\(\lambda\)</span>和<span class="math inline">\(n\)</span>维非零列向量<span class="math inline">\(x\)</span>满足如下关系 <span class="math display">\[Ax=\lambda x \tag{14}\]</span> 则称<span class="math inline">\(\lambda\)</span>为矩阵<span class="math inline">\(A\)</span>的特征值，向量<span class="math inline">\(x\)</span>为矩阵<span class="math inline">\(A\)</span>的特征向量</li>
 </ul>
 </blockquote>
-从定义看出，矩阵<span class="math inline">\(A\)</span>仅仅对特征向量进行了<span class="math inline">\(\lambda\)</span>的拉伸，假设所有的特征值组成可逆矩阵<span class="math inline">\(Q\)</span>，特征值组成对角矩阵<span class="math inline">\(\Sigma\)</span>，则矩阵<span class="math inline">\(A\)</span>可以分解为
-<center>
-<span class="math inline">\(A=Q\Sigma Q^{-1}\)</span>
-</center>
-<p>以上称为矩阵的特征值分解</p>
+<p>从定义看出，矩阵<span class="math inline">\(A\)</span>仅仅对特征向量进行了<span class="math inline">\(\lambda\)</span>的拉伸，假设所有的特征值组成可逆矩阵<span class="math inline">\(Q\)</span>，特征值组成对角矩阵<span class="math inline">\(\Sigma\)</span>，则矩阵<span class="math inline">\(A\)</span>可以分解为 <span class="math display">\[A=Q\Sigma Q^{-1} \tag{15}\]</span> 以上称为矩阵的特征值分解</p>
 <blockquote>
 <ul>
-<li>定义8，矩阵的相似性，设<span class="math inline">\(A,B\)</span>都是<span class="math inline">\(n\)</span>阶矩阵，如果存在可逆矩阵<span class="math inline">\(P\)</span>,使得，
-<center>
-<span class="math inline">\(P^{-1}AP=B\)</span>
-</center>
-则称<span class="math inline">\(A,B\)</span>相似</li>
+<li>定义8，矩阵的相似性，设<span class="math inline">\(A,B\)</span>都是<span class="math inline">\(n\)</span>阶矩阵，如果存在可逆矩阵<span class="math inline">\(P\)</span>,使得， <span class="math display">\[P^{-1}AP=B \tag{16}\]</span> 则称<span class="math inline">\(A,B\)</span>相似</li>
 </ul>
 </blockquote>
 <blockquote>
@@ -612,41 +587,38 @@ $
 </ul>
 </blockquote>
 <p>容易证明</p>
-<center>
-$| B-E | = | P<sup>{-1}AP-P</sup>{-1}(E)P | = | P^{-1}(A- E)P | = | P^{-1} | | A- E | | P | = | A-E | $
-</center>
+<p><span class="math display">\[\left | B-\lambda E \right | = \left | P^{-1}AP-P^{-1}(\lambda E)P \right | = \left | P^{-1}(A-
+\lambda E)P \right | = \left | P^{-1} \right | \left | A-
+\lambda E \right | \left | P \right | = \left | A-\lambda E \right | \tag{17}\]</span></p>
 <p>因此，如果一个矩阵<span class="math inline">\(A\)</span>跟一个上(下)三角矩阵或者对角阵相似，则对角线的<span class="math inline">\(n\)</span>个值就是<span class="math inline">\(A\)</span>的特征值。同理，对于<span class="math inline">\(n\)</span>阶矩阵<span class="math inline">\(A\)</span>，能否找到一个可逆矩阵<span class="math inline">\(P\)</span>使得<span class="math inline">\(P^{-1}AP=\Lambda\)</span>，其中<span class="math inline">\(\Lambda\)</span>为对角矩阵，如果存在，则称方阵<span class="math inline">\(A\)</span>的对角化分解。</p>
 <p>首先来看如果存在可逆矩阵<span class="math inline">\(P\)</span>，它会满足什么条件，根据定义，把可逆矩阵写成列向量，即<span class="math inline">\(P=(p_{1},p_{2},\cdots,p_{n})\)</span> ，根据<span class="math inline">\(P^{-1}AP=\Lambda\)</span> ,有<span class="math inline">\(AP=\Lambda P\)</span>,既有</p>
-<center>
-<span class="math inline">\(A(p_{1},p_{2},\cdots,p_{n})=(p_{1},p_{2},\cdots,p_{n})\begin{bmatrix} \lambda_{1} &amp; &amp; &amp; \\  &amp; \lambda_{2} &amp; &amp; \\  &amp; &amp; \ddots &amp; \\  &amp; &amp; &amp; \lambda_{n} \end{bmatrix} =(\lambda_{1}p_{1},\lambda_{2}p_{2},\cdots,\lambda_{n}p_{n})\)</span>
-</center>
+<p><span class="math display">\[A(p_{1},p_{2},\cdots,p_{n})=(p_{1},p_{2},\cdots,p_{n})\begin{bmatrix}
+\lambda_{1} &amp;  &amp;  &amp; \\ 
+ &amp; \lambda_{2} &amp;  &amp; \\ 
+ &amp;  &amp; \ddots   &amp; \\ 
+ &amp;  &amp;  &amp;  \lambda_{n}
+\end{bmatrix}
+=(\lambda_{1}p_{1},\lambda_{2}p_{2},\cdots,\lambda_{n}p_{n}) \tag{18}\]</span></p>
 <p>即，如果矩阵<span class="math inline">\(A\)</span>能对角化，则对角化<span class="math inline">\(\Lambda\)</span>为特征值组成的对角矩阵，可逆矩阵为特征向量组成的矩阵，因此特征值分解可以实现矩阵的对角化分解。</p>
 <blockquote>
 <ul>
-<li>定理四，一个<span class="math inline">\(n\)</span>矩阵能够对角化的充分必要条件是它有<span class="math inline">\(n\)</span>个线性无关的特征向量。特别的，对于对称矩阵<span class="math inline">\(A(即A^{T}=A)\)</span>，它的任意两个不同特征值对应的特征向量正交；并且必有正交阵<span class="math inline">\(P\)</span>，使
-<center>
-<span class="math inline">\(P^{-1}AP=P^{T}AP=\Lambda\)</span>
-</center>
-<span class="math inline">\(\Lambda\)</span>为特征值组成的对角化矩阵</li>
+<li>定理四，一个<span class="math inline">\(n\)</span>矩阵能够对角化的充分必要条件是它有<span class="math inline">\(n\)</span>个线性无关的特征向量。特别的，对于对称矩阵<span class="math inline">\(A(即A^{T}=A)\)</span>，它的任意两个不同特征值对应的特征向量正交；并且必有正交阵<span class="math inline">\(P\)</span>，使 <span class="math display">\[P^{-1}AP=P^{T}AP=\Lambda \tag{19}\]</span> <span class="math inline">\(\Lambda\)</span>为特征值组成的对角化矩阵</li>
 </ul>
 </blockquote>
 <h4 id="矩阵相似的意义">矩阵相似的意义</h4>
-我们知道矩阵对应一个在给定基下的线性变换，如果同一个线性变换，在基<span class="math inline">\(a\)</span>下的变换矩阵为<span class="math inline">\(A\)</span>，在<span class="math inline">\(b\)</span>下的变换矩阵为B，则<span class="math inline">\(A,B\)</span>有什么关系呢? 根据基变换的性质，基<span class="math inline">\(b\)</span>可以由基<span class="math inline">\(a\)</span>和一个矩阵乘积来表示，即<span class="math inline">\(b=aP\)</span>，则对于线性变换<span class="math inline">\(L\)</span>有
-<center>
-<span class="math inline">\(\begin{array}{l} L(b)=L(a)P \\ \Rightarrow {[ L(b_1) \cdots L(b_n) ] = [ L(a_1) \cdots L(a_n) ]\; P }\\ \Rightarrow {(b_1\cdots b_n)B=(a_1\cdots a_n)AP}\\ \Rightarrow {(a_1\cdots a_n)PB=(a_1\cdots a_n)AP}\\ \Rightarrow {PB=AP} \\ \Rightarrow {B=P^{-1}AP} \end{array}\)</span>
-</center>
+<p>我们知道矩阵对应一个在给定基下的线性变换，如果同一个线性变换，在基<span class="math inline">\(a\)</span>下的变换矩阵为<span class="math inline">\(A\)</span>，在<span class="math inline">\(b\)</span>下的变换矩阵为B，则<span class="math inline">\(A,B\)</span>有什么关系呢? 根据基变换的性质，基<span class="math inline">\(b\)</span>可以由基<span class="math inline">\(a\)</span>和一个矩阵乘积来表示，即<span class="math inline">\(b=aP\)</span>，则对于线性变换<span class="math inline">\(L\)</span>有</p>
+<p><span class="math display">\[\begin{array}{l}
+L(b)=L(a)P \\ \Rightarrow
+{[ L(b_1) \cdots L(b_n) ] = [ L(a_1) \cdots L(a_n) ]\; P }\\ \Rightarrow
+{(b_1\cdots b_n)B=(a_1\cdots a_n)AP}\\ \Rightarrow 
+{(a_1\cdots a_n)PB=(a_1\cdots a_n)AP}\\ \Rightarrow {PB=AP}
+\\ \Rightarrow {B=P^{-1}AP}
+\end{array} \tag{20}\]</span></p>
 <p>也就是说，两个矩阵相似，表示这两个矩阵是在不同的基表示下的同一个线性变换，特别，可逆矩阵<span class="math inline">\(P\)</span>为两个基的过渡矩阵</p>
 <h4 id="特征值及特征向量的意义">特征值及特征向量的意义</h4>
 <p>根据矩阵相似的意义，方阵<span class="math inline">\(A\)</span>的特征值分解可以理解两个不同基下的同一个变换，其中特征向量组成的矩阵是两个变换的过渡矩阵，特别的，假设其中一个基是自然基，则另一个基为<span class="math inline">\(P\)</span>或者<span class="math inline">\(P^{-1}\)</span>，假设对角阵对应的基为自然基，则方阵<span class="math inline">\(A\)</span>对应的基为<span class="math inline">\(P\)</span>，也就是向量<span class="math inline">\(A\)</span>的变换是对自然基组成的向量做特征值大小的缩放。</p>
 <p>从线性空间的角度看，在一个定义了内积的线性空间里，对一个<span class="math inline">\(n\)</span>阶对称方阵进行特征分解，就是产生了该空间的<span class="math inline">\(n\)</span>个标准正交基，然后把矩阵投影到这<span class="math inline">\(n\)</span>个基上。<span class="math inline">\(n\)</span>个特征向量就是<span class="math inline">\(n\)</span>个标准正交基，因为对称方阵的特征向量是一个正交矩阵，所以，而特征值的模则代表矩阵在每个基上的投影长度。特征值越大，说明矩阵在对应的特征向量上的方差越大，功率越大，信息量越多。</p>
-对于小方阵，特征值及特征向量可以通过定义来求得。下面来看怎么求特征值及特征向量，由定义式可有
-<center>
-<span class="math inline">\((A-\lambda E)x=0\)</span>
-</center>
-这是一个<span class="math inline">\(n\)</span>个未知数<span class="math inline">\(n\)</span>个方程的齐次线性方程组，因它有非零解的条件是特征多项式为<span class="math inline">\(0\)</span>，即
-<center>
-<span class="math inline">\(\left |A-\lambda E \right |=0\)</span>
-</center>
+<p>对于小方阵，特征值及特征向量可以通过定义来求得。下面来看怎么求特征值及特征向量，由定义式可有 <span class="math display">\[(A-\lambda E)x=0 \tag{21}\]</span> 这是一个<span class="math inline">\(n\)</span>个未知数<span class="math inline">\(n\)</span>个方程的齐次线性方程组，因它有非零解的条件是特征多项式为<span class="math inline">\(0\)</span>，即 <span class="math display">\[\left |A-\lambda E  \right |=0 \tag{22}\]</span></p>
 <p>假设<span class="math inline">\(n\)</span>阶方阵<span class="math inline">\(A\)</span>的特征值分别为<span class="math inline">\(\lambda_{1},\lambda_{2},\cdots,\lambda_{n}\)</span>，特征值有如下性质<br>
 * 1) <span class="math inline">\(\lambda_{1}+\lambda_{2}+\cdots+\lambda_{n} = a_{11}+a_{22}+\cdots+a_{nn}\)</span><br>
 * 2) <span class="math inline">\(\lambda_{1}\lambda_{2}\cdots\lambda_{n}=\left |A\right|\)</span></p>
@@ -654,79 +626,97 @@ $| B-E | = | P<sup>{-1}AP-P</sup>{-1}(E)P | = | P^{-1}(A- E)P | = | P^{-1} | | A
 <h2 id="矩阵的奇异值分解">矩阵的奇异值分解</h2>
 <p>根据特征值分解的描述，特征值的大小可以看成矩阵在某一方向的拉伸大小，如果矩阵在某些方向上的拉伸比较小，也就是特征值比较小，如果不考虑这些特征值的影响，矩阵的变换作用影响不大，因此可以用特征值分解来降维。</p>
 <p>上面讲的特征值分解是针对方阵的，那么对于普通的矩阵，会有这样的分解吗？其实，对于任何矩阵矩阵<span class="math inline">\(A_{mn}\)</span>，存在一个正交矩阵<span class="math inline">\(U_{mm}\)</span>，一个正交矩阵<span class="math inline">\(V_{nn}\)</span>，一个对角矩阵<span class="math inline">\(\Lambda_{mn}\)</span>，使得</p>
-<center>
-<span class="math inline">\(A_{mn}=U_{mm}\Lambda_{mn}V^{T}_{nn}\)</span>
-</center>
-<p>成立，这就是矩阵的奇异值分解。</p>
-首先对于任何<span class="math inline">\(A_{mn}\)</span>，都有<span class="math inline">\(A^{T}A\)</span>是对称矩阵，根据对称矩阵的特征分解，有
-<center>
-<span class="math inline">\(A=Q\Sigma Q^{-1}\)</span>
-</center>
+<p><span class="math display">\[A_{mn}=U_{mm}\Lambda_{mn}V^{T}_{nn} \tag{23}\]</span> 成立，这就是矩阵的奇异值分解。</p>
+<p>首先对于任何<span class="math inline">\(A_{mn}\)</span>，都有<span class="math inline">\(A^{T}A\)</span>是对称矩阵，根据对称矩阵的特征分解，有 <span class="math display">\[A=Q\Sigma Q^{-1} \tag{24}\]</span></p>
 <p>假设我们得到一组正交基<span class="math inline">\({v_1,v_2,\cdots,v_n}\)</span>，即<span class="math inline">\(A^{T}Av_i = \lambda_iv_i\)</span>，下面看对正交基进行<span class="math inline">\(A\)</span>线性变换的向量组<span class="math inline">\({Av_1,Av_2,\cdots,Av_n}\)</span></p>
-<center>
-$(Av_{i},Av_{j})\ =(Av_{i})<sup>{T}(Av_{j})\ =v</sup>{T}<em>{i}A<sup>{T}Av_{j}\ =v</sup>{T}</em>{i}(<em>{j}v</em>{j})\ =_{j}v^{T}<em>iv</em>{j}\ =0 $
-</center>
-也就是经过矩阵<span class="math inline">\(A\)</span>线性变换后的基<span class="math inline">\({Av_1,Av_2,\cdots,Av_n}\)</span>也是正交的，将其标准化，即将<span class="math inline">\(Av_{i}\)</span>变换为
-<center>
-<span class="math display">\[u_{i}=\frac{Av_{i}}{\left | Av_{i} \right | } = \frac{1}{\sqrt{\lambda_{i}}}Av_{i}\]</span>
-</center>
+<p><span class="math display">\[(Av_{i},Av_{j})\\
+=(Av_{i})^{T}(Av_{j})\\
+=v^{T}_{i}A^{T}Av_{j}\\
+=v^{T}_{i}(\lambda_{j}v_{j})\\
+=\lambda_{j}v^{T}_iv_{j}\\
+=0 \tag{25}
+\]</span></p>
+<p>也就是经过矩阵<span class="math inline">\(A\)</span>线性变换后的基<span class="math inline">\({Av_1,Av_2,\cdots,Av_n}\)</span>也是正交的，将其标准化，即将<span class="math inline">\(Av_{i}\)</span>变换为</p>
+<p><span class="math display">\[u_{i}=\frac{Av_{i}}{\left | Av_{i} \right | } = \frac{1}{\sqrt{\lambda_{i}}}Av_{i} \tag{26}\]</span></p>
 <p>如果令<span class="math inline">\(\delta_{i} = \sqrt{\lambda_{i}}\)</span>，称<span class="math inline">\(\delta_{i}\)</span>为奇异值，则有<span class="math inline">\(Av_{i} = \sqrt{\lambda_{i}}u_{i}\)</span></p>
 <p>假设矩阵<span class="math inline">\(A\)</span>的秩为<span class="math inline">\(rank(A)=r\)</span>，则<span class="math inline">\(rank（A^{T}A）=rank(AA^{T})=rank(A)=r\)</span>，则对称矩阵<span class="math inline">\(A^{T}A\)</span>有<span class="math inline">\(r\)</span>个非零的特征值，因此对于这<span class="math inline">\(r\)</span>个特征值对应的特征向量都有<span class="math inline">\(Av_{i}\ne0\)</span>,而为<span class="math inline">\(0\)</span>的特征值对应的特征向量都有<span class="math inline">\(Av_{i}=0\)</span></p>
 <p>因此，由<span class="math inline">\(u_1,u_2,\cdots,u_r\)</span>组成的基是一个正交基，如果<span class="math inline">\(r&lt;m\)</span>，通过正交化将其扩展为<span class="math inline">\(R^{m}\)</span>上的正交基</p>
-<center>
-$AV=A(v_{1},v_{2},,v_{n})\ =(Av_{1},Av_{2},,Av_{r},0,0,,0)\ =(<em>{1}u</em>{1},<em>{2}u</em>{2},,<em>{r}u</em>{r},0,0,.0) =U\ A=UV_{T} $
-</center>
+<p><span class="math display">\[AV=A(v_{1},v_{2},\cdots,v_{n})\\
+=(Av_{1},Av_{2},\cdots,Av_{r},0,0,\cdots,0)\\
+=(\delta_{1}u_{1},\delta_{2}u_{2},\cdots,\delta_{r}u_{r},0,0,\cdots.0)
+=U\Sigma\\
+\Longrightarrow A=U\Sigma V_{T} \tag{27}
+\]</span></p>
 <p><span class="math inline">\(v_{i}\)</span>是对称矩阵<span class="math inline">\(A^{T}A\)</span>的特征向量，称为<span class="math inline">\(A\)</span>的右奇异向量，实际上<span class="math inline">\(u_{i}\)</span>是<span class="math inline">\(AA^{T}\)</span>的特征向量，称为<span class="math inline">\(A\)</span>的左奇异向量。</p>
-写成分块形式如下
-<center>
-$A=
-<span class="math display">\[\begin{bmatrix}
+<p>写成分块形式如下</p>
+<p><span class="math display">\[A=\left[
+\begin{array}{ccc|ccc}
+    u_{1} &amp; \cdots &amp; u_{k} &amp; u_{k+1} &amp; \cdots &amp; u_{m}
+\end{array}
+\right]
+\left[
+\begin{array}{ccc|c}
+\sigma_{1} &amp;  &amp; &amp;\\
+ &amp; \ddots &amp; &amp; 0\\
+ &amp;  &amp;  \sigma_{k} &amp; \\ \hline
+ &amp;   &amp; &amp;   \\
+ &amp; 0 &amp; &amp; 0 \\
+ &amp;   &amp; &amp;   \\
+\end{array}
+\right]
+\begin{bmatrix}
 v^{T}_{1} \\ 
 \vdots \\ 
 v^{T}_{k}\\ \hline
 v^{T}_{k+1}\\
 \vdots \\
 v^{T}_{n}
-\end{bmatrix}\]</span>
-\ A=
-<span class="math display">\[\begin{bmatrix}
+\end{bmatrix}\\
+\Longrightarrow
+A=
+\begin{bmatrix}
 u_{1} &amp; \cdots &amp; u_{k}  
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 \sigma_{1} &amp; &amp; \\
 &amp; \ddots &amp; \\
 &amp; &amp; \sigma_{k}  
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 v^{T}_{1}\\
 \vdots\\
 v^{T}_{k}   
-\end{bmatrix}\]</span>
-<ul>
-<li><span class="math display">\[\begin{bmatrix}
+\end{bmatrix}
++
+\begin{bmatrix}
 u_{k+1} &amp; \cdots &amp; u_{m}  
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 &amp; &amp; \\
 &amp; 0 &amp; \\
 &amp; &amp; \\  
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 v^{T}_{k+1}\\
 \vdots\\
 v^{T}_{n}   
-\end{bmatrix}\]</span>
-\ A=
-<span class="math display">\[\begin{bmatrix}
+\end{bmatrix}\\
+\Longrightarrow
+A=
+\begin{bmatrix}
 u_{1} &amp; \cdots &amp; u_{k}  
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 \sigma_{1} &amp; &amp; \\
 &amp; \ddots &amp; \\
 &amp; &amp; \sigma_{k}  
-\end{bmatrix}\begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 v^{T}_{1}\\
 \vdots\\
 v^{T}_{k}   
-\end{bmatrix}\]</span>
-$</li>
-</ul>
-</center>
+\end{bmatrix} \tag{28}
+\]</span></p>
 <p>奇异值的意义跟特征值的意义相似，正交基<span class="math inline">\(U_{mm}\)</span>表示原空间的正交基，正交基<span class="math inline">\(V_{nn}\)</span>表示目标空间的正交基，而对角矩阵<span class="math inline">\(\Lambda\)</span>表示变换的重要性</p>
 <h2 id="奇异值的应用">奇异值的应用</h2>
 <h4 id="数据压缩">数据压缩</h4>
