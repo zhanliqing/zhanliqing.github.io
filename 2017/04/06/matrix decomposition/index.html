@@ -95,26 +95,26 @@
 <meta property="og:url" content="http://yoursite.com/2017/04/06/matrix decomposition/index.html">
 <meta property="og:site_name" content="欢迎光临我的技术博客">
 <meta property="og:description" content="预备  定义1，给定一个由$n$维向量集合组成的集合$V$，如果集合$V$非空并且对于任意集合$V$中的向量，满足如下两个条件1) 若$a\in V,b\in V$ ,则$a+b\in V$；2) 若$a\in V,\lambda \in R$，则$\lambda a \in V$；则称集合$V$为向量空间   定义1说明在向量空间中，对向量加和运算和向量数乘运算封闭   定义2，设$V$为向量空">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/1.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/2.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/3.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/4.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/5.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/lena.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/6.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/pic.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/7.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/8.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/9.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/10.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/11.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/12.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/04/06/image/13.jpg">
-<meta property="og:updated_time" content="2017-04-13T10:54:07.852Z">
+<meta property="og:image" content="http://yoursite.com/img/1.jpg">
+<meta property="og:image" content="http://yoursite.com/img/2.jpg">
+<meta property="og:image" content="http://yoursite.com/img/3.jpg">
+<meta property="og:image" content="http://yoursite.com/img/4.jpg">
+<meta property="og:image" content="http://yoursite.com/img/5.jpg">
+<meta property="og:image" content="http://yoursite.com/img/lena.jpg">
+<meta property="og:image" content="http://yoursite.com/img/6.jpg">
+<meta property="og:image" content="http://yoursite.com/img/pic.jpg">
+<meta property="og:image" content="http://yoursite.com/img/7.jpg">
+<meta property="og:image" content="http://yoursite.com/img/8.jpg">
+<meta property="og:image" content="http://yoursite.com/img/9.jpg">
+<meta property="og:image" content="http://yoursite.com/img/10.jpg">
+<meta property="og:image" content="http://yoursite.com/img/11.jpg">
+<meta property="og:image" content="http://yoursite.com/img/12.jpg">
+<meta property="og:image" content="http://yoursite.com/img/13.jpg">
+<meta property="og:updated_time" content="2017-04-23T06:39:04.564Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="矩阵分解及其应用">
 <meta name="twitter:description" content="预备  定义1，给定一个由$n$维向量集合组成的集合$V$，如果集合$V$非空并且对于任意集合$V$中的向量，满足如下两个条件1) 若$a\in V,b\in V$ ,则$a+b\in V$；2) 若$a\in V,\lambda \in R$，则$\lambda a \in V$；则称集合$V$为向量空间   定义1说明在向量空间中，对向量加和运算和向量数乘运算封闭   定义2，设$V$为向量空">
-<meta name="twitter:image" content="http://yoursite.com/2017/04/06/image/1.jpg">
+<meta name="twitter:image" content="http://yoursite.com/img/1.jpg">
 
 
 
@@ -423,7 +423,7 @@
 <center><br>$\begin{bmatrix}<br>b_{1}\ <br>b_{2}\ <br>\vdots\ <br>b_{n}<br>\end{bmatrix}<br>=<br>\begin{bmatrix}<br>p_{11} &amp; p_{21} &amp; \cdots &amp; p_{n1}\ <br>p_{12} &amp; p_{22} &amp; \cdots &amp; p_{n2}\ <br>\vdots &amp; \vdots &amp; \vdots &amp; \vdots\ <br>p_{1n} &amp; p_{n2} &amp; \cdots &amp; p_{nn}<br>\end{bmatrix}<br>\begin{bmatrix}<br>a_{1}\ <br>a_{2}\ <br>\vdots\ <br>a_{n}<br>\end{bmatrix}<br>=P^{T}<br>$<br></center>
 
 <p>因此，一个向量在标准坐标系下坐标为$x=[x_{1},x_{2},\cdots,x_{n}]$,在基$b$下的坐标为$x’=x^{T}[b_{1}^{T},b_{2}^{T},\cdots,b_{n}^{T}]$,公式也可以写作</p>
-<center>$EX^{T}=BX’^{T}$</center><br>也就是矩阵乘法$AX=b$可以认为是在标准坐标系下坐标是$b$，在$A$组成的基下的坐标是$x$<br><br>给定一个矩阵$A$,矩阵$Ax$可以看成一个基变换，如果认为基变换前后是同一个基，则可以认为$Ax$是对向量进行角度及长度的变换，矩阵可以认为是一个线性变换，也就是变换基坐标和变换向量是相对的<br><br>下面用二维图示进行说明，给定一个二维对角矩阵<br><center><br>$M=\begin{bmatrix}<br>3 &amp; 0\ <br>0 &amp; 1<br>\end{bmatrix}$<br></center><br>从几何上讲，$M$是将二维平面上的点$(x,y)$经过线性变换到另外一个点的变换矩阵<br><center><br>$M=\begin{bmatrix}<br>3 &amp; 0\ <br>0 &amp; 1<br>\end{bmatrix}<br>\begin{bmatrix}<br>x\ <br>y<br>\end{bmatrix}<br>=<br>\begin{bmatrix}<br>3x\ <br>y<br>\end{bmatrix}<br>$<br></center><br>变换的效果如下图所示，变换后的平面仅仅是沿 X 水平方面进行了拉伸3倍，垂直方向是并没有发生变化。<br><center><br><img src="../image/1.jpg" alt=""><br></center><br>现在看下矩阵<br><center><br>$M=\begin{bmatrix}<br>2 &amp; 1\ <br>1 &amp; 2<br>\end{bmatrix}<br>\begin{bmatrix}<br>x\ <br>y<br>\end{bmatrix}<br>=<br>\begin{bmatrix}<br>2x+y\ <br>x+2y<br>\end{bmatrix}<br>$<br></center><br>这个矩阵产生的变换效果如下图所示<br><center><br><img src="../image/2.jpg" alt=""><br></center><br> 这种变换效果看起来非常的奇怪，在实际环境下很难描述出来变换的规律 ( 这里应该是指无法清晰辨识出旋转的角度，拉伸的倍数之类的信息)。还是基于上面的对称矩阵，假设我们把左边的平面旋转45度角，然后再进行矩阵$M$的线性变换，效果如下图所示：<br><center><br><img src="../image/3.jpg" alt=""><br></center>
+<center>$EX^{T}=BX’^{T}$</center><br>也就是矩阵乘法$AX=b$可以认为是在标准坐标系下坐标是$b$，在$A$组成的基下的坐标是$x$<br><br>给定一个矩阵$A$,矩阵$Ax$可以看成一个基变换，如果认为基变换前后是同一个基，则可以认为$Ax$是对向量进行角度及长度的变换，矩阵可以认为是一个线性变换，也就是变换基坐标和变换向量是相对的<br><br>下面用二维图示进行说明，给定一个二维对角矩阵<br><center><br>$M=\begin{bmatrix}<br>3 &amp; 0\ <br>0 &amp; 1<br>\end{bmatrix}$<br></center><br>从几何上讲，$M$是将二维平面上的点$(x,y)$经过线性变换到另外一个点的变换矩阵<br><center><br>$M=\begin{bmatrix}<br>3 &amp; 0\ <br>0 &amp; 1<br>\end{bmatrix}<br>\begin{bmatrix}<br>x\ <br>y<br>\end{bmatrix}<br>=<br>\begin{bmatrix}<br>3x\ <br>y<br>\end{bmatrix}<br>$<br></center><br>变换的效果如下图所示，变换后的平面仅仅是沿 X 水平方面进行了拉伸3倍，垂直方向是并没有发生变化。<br><center><br><img src="/img/1.jpg" alt=""><br></center><br>现在看下矩阵<br><center><br>$M=\begin{bmatrix}<br>2 &amp; 1\ <br>1 &amp; 2<br>\end{bmatrix}<br>\begin{bmatrix}<br>x\ <br>y<br>\end{bmatrix}<br>=<br>\begin{bmatrix}<br>2x+y\ <br>x+2y<br>\end{bmatrix}<br>$<br></center><br>这个矩阵产生的变换效果如下图所示<br><center><br><img src="/img/2.jpg" alt=""><br></center><br> 这种变换效果看起来非常的奇怪，在实际环境下很难描述出来变换的规律 ( 这里应该是指无法清晰辨识出旋转的角度，拉伸的倍数之类的信息)。还是基于上面的对称矩阵，假设我们把左边的平面旋转45度角，然后再进行矩阵$M$的线性变换，效果如下图所示：<br><center><br><img src="/img/3.jpg" alt=""><br></center>
 
 <p>看起来是不是有点熟悉？ 对的，经过 M 线性变换后，跟前面的对角矩阵的功能是相同的，都是将网格沿着一个方向拉伸了3倍。</p>
 <p>从上边看出，一个矩阵可以对向量进行旋转和拉伸作用，有没有矩阵对向量仅仅进行旋转变化，不进行拉伸呢？正交变换就仅仅对向量进行旋转，不进行拉伸</p>
@@ -436,13 +436,13 @@
 <center><br>$\parallel y \parallel =\sqrt{y^{T}y}=\sqrt{x^{T}P^{T}Px}=\sqrt{x^{T}x}=\parallel x \parallel$<br></center>
 
 <p>下面以一个图示来演示正交变换,假设二维空间中的一个向量$OA$，它在标准坐标系也即$e1、e2$表示的坐标是中表示为$(a,b)^{T}$，现在把它用另一组坐标$e1’、e2’$表示为$(a’,b’)^{T}$，存在矩阵$U$使得$U(a’,b’)^{T}=(a,b)^{T}$</p>
-<center><br><img src="../image/4.jpg" alt=""><br></center>
+<center><br><img src="/img/4.jpg" alt=""><br></center>
 
 <p>容易求出$U$，其中$e_{1}’=[\cos\theta,\sin\theta]^{T}，e_{2}’=[-\sin\theta,\cos\theta]$，因此</p>
 <center>$U=\begin{bmatrix}<br>\cos\theta &amp; -\sin\theta\ <br>\sin\theta &amp; \cos\theta<br>\end{bmatrix}$</center>
 
 <p>下图展示了基变换和向量方向变换的等价</p>
-<center><br><img src="../image/5.jpg" alt=""><br></center>
+<center><br><img src="/img/5.jpg" alt=""><br></center>
 
 <p>有没有矩阵变换，仅仅对向量进行拉伸，不改变方向呢，这就是方阵的特征值和特征向量</p>
 <h2 id="方阵的特征值及特征向量"><a href="#方阵的特征值及特征向量" class="headerlink" title="方阵的特征值及特征向量"></a>方阵的特征值及特征向量</h2><blockquote>
@@ -490,27 +490,27 @@
 
 <p>$v_{i}$是对称矩阵$A^{T}A$的特征向量，称为$A$的右奇异向量，实际上$u_{i}$是$AA^{T}$的特征向量，称为$A$的左奇异向量。</p>
 <p>写成分块形式如下</p>
-<center><br>$A=\left[<br>\begin{array}{ccc|ccc}<br>    u_{1} &amp; \cdots &amp; u_{k} &amp; u_{k+1} &amp; \cdots &amp; u_{m}<br>\end{array}<br>\right]<br>\left[<br>\begin{array}{ccc|c}<br>\sigma_{1} &amp;  &amp; &amp;\\<br> &amp; \ddots &amp; &amp; 0\\<br> &amp;  &amp;  \sigma_{k} &amp; \ \hline<br> &amp;   &amp; &amp;   \\<br> &amp; 0 &amp; &amp; 0 \\<br> &amp;   &amp; &amp;   \\<br>\end{array}<br>\right]<br>\begin{bmatrix}<br>v^{T}_{1} \ <br>\vdots \ <br>v^{T}_{k}\ \hline<br>v^{T}_{k+1}\\<br>\vdots \\<br>v^{T}_{n}<br>\end{bmatrix}\\<br>\Longrightarrow<br>A=<br>\begin{bmatrix}<br>u_{1} &amp; \cdots &amp; u_{k}<br>\end{bmatrix}<br>\begin{bmatrix}<br>\sigma_{1} &amp; &amp; \\<br>&amp; \ddots &amp; \\<br>&amp; &amp; \sigma_{k}<br>\end{bmatrix}<br>\begin{bmatrix}<br>v^{T}_{1}\\<br>\vdots\\<br>v^{T}_{k}<br>\end{bmatrix}<br>+<br>\begin{bmatrix}<br>u_{k+1} &amp; \cdots &amp; u_{m}<br>\end{bmatrix}<br>\begin{bmatrix}<br>&amp; &amp; \\<br>&amp; 0 &amp; \\<br>&amp; &amp; \ <br>\end{bmatrix}<br>\begin{bmatrix}<br>v^{T}_{k+1}\\<br>\vdots\\<br>v^{T}_{n}<br>\end{bmatrix}\\<br>\Longrightarrow<br>A=<br>\begin{bmatrix}<br>u_{1} &amp; \cdots &amp; u_{k}<br>\end{bmatrix}<br>\begin{bmatrix}<br>\sigma_{1} &amp; &amp; \\<br>&amp; \ddots &amp; \\<br>&amp; &amp; \sigma_{k}<br>\end{bmatrix}<br>\begin{bmatrix}<br>v^{T}_{1}\\<br>\vdots\\<br>v^{T}_{k}<br>\end{bmatrix}<br>$<br></center><br>奇异值的意义跟特征值的意义相似，正交基$U_{mm}$表示原空间的正交基，正交基$V_{nn}$表示目标空间的正交基，而对角矩阵$\Lambda$表示变换的重要性<br><br>奇异值的应用<br>———–<br><br>####数据压缩<br>从分解公式看出，如果矩阵的秩$r$远小于$m,n$，则矩阵可以压缩标示而且又不失真，特别的如果忽略小的奇异值，还能对数据进行压缩，比如一张图像就是一个大的二维矩阵，如果是彩色的就是三个大矩阵，比如一幅$1000<em>1000$的图像$A$，存储就需要$1000000$个像素了，如果矩阵的秩是$r$，则总共需要存储的数据是$1000</em>r+r<em>r+1000+r$,如果考虑$k$大的特征值，只需要$1000</em>k+k*k+1000+k$<br><br>下面给出一个图像进行svd分解后选取不同的特征值进行图像还原的效果<br><center><br><img src="../image/lena.jpg" alt=""><br><img src="../image/6.jpg" alt=""><br><img src="../image/pic.jpg" alt=""><br><img src="../image/7.jpg" alt=""><br></center>
+<center><br>$A=\left[<br>\begin{array}{ccc|ccc}<br>    u_{1} &amp; \cdots &amp; u_{k} &amp; u_{k+1} &amp; \cdots &amp; u_{m}<br>\end{array}<br>\right]<br>\left[<br>\begin{array}{ccc|c}<br>\sigma_{1} &amp;  &amp; &amp;\\<br> &amp; \ddots &amp; &amp; 0\\<br> &amp;  &amp;  \sigma_{k} &amp; \ \hline<br> &amp;   &amp; &amp;   \\<br> &amp; 0 &amp; &amp; 0 \\<br> &amp;   &amp; &amp;   \\<br>\end{array}<br>\right]<br>\begin{bmatrix}<br>v^{T}_{1} \ <br>\vdots \ <br>v^{T}_{k}\ \hline<br>v^{T}_{k+1}\\<br>\vdots \\<br>v^{T}_{n}<br>\end{bmatrix}\\<br>\Longrightarrow<br>A=<br>\begin{bmatrix}<br>u_{1} &amp; \cdots &amp; u_{k}<br>\end{bmatrix}<br>\begin{bmatrix}<br>\sigma_{1} &amp; &amp; \\<br>&amp; \ddots &amp; \\<br>&amp; &amp; \sigma_{k}<br>\end{bmatrix}<br>\begin{bmatrix}<br>v^{T}_{1}\\<br>\vdots\\<br>v^{T}_{k}<br>\end{bmatrix}<br>+<br>\begin{bmatrix}<br>u_{k+1} &amp; \cdots &amp; u_{m}<br>\end{bmatrix}<br>\begin{bmatrix}<br>&amp; &amp; \\<br>&amp; 0 &amp; \\<br>&amp; &amp; \ <br>\end{bmatrix}<br>\begin{bmatrix}<br>v^{T}_{k+1}\\<br>\vdots\\<br>v^{T}_{n}<br>\end{bmatrix}\\<br>\Longrightarrow<br>A=<br>\begin{bmatrix}<br>u_{1} &amp; \cdots &amp; u_{k}<br>\end{bmatrix}<br>\begin{bmatrix}<br>\sigma_{1} &amp; &amp; \\<br>&amp; \ddots &amp; \\<br>&amp; &amp; \sigma_{k}<br>\end{bmatrix}<br>\begin{bmatrix}<br>v^{T}_{1}\\<br>\vdots\\<br>v^{T}_{k}<br>\end{bmatrix}<br>$<br></center><br>奇异值的意义跟特征值的意义相似，正交基$U_{mm}$表示原空间的正交基，正交基$V_{nn}$表示目标空间的正交基，而对角矩阵$\Lambda$表示变换的重要性<br><br>奇异值的应用<br>———–<br><br>####数据压缩<br>从分解公式看出，如果矩阵的秩$r$远小于$m,n$，则矩阵可以压缩标示而且又不失真，特别的如果忽略小的奇异值，还能对数据进行压缩，比如一张图像就是一个大的二维矩阵，如果是彩色的就是三个大矩阵，比如一幅$1000<em>1000$的图像$A$，存储就需要$1000000$个像素了，如果矩阵的秩是$r$，则总共需要存储的数据是$1000</em>r+r<em>r+1000+r$,如果考虑$k$大的特征值，只需要$1000</em>k+k*k+1000+k$<br><br>下面给出一个图像进行svd分解后选取不同的特征值进行图像还原的效果<br><center><br><img src="/img/lena.jpg" alt=""><br><img src="/img/6.jpg" alt=""><br><img src="/img/pic.jpg" alt=""><br><img src="/img/7.jpg" alt=""><br></center>
 
 
 <p>####求解PCA</p>
 <p>####隐语义分析(Latent Semantic Analysis)<br>在文本处理中，潜在语义分析（LSA）假设在词项和文档之间有一个潜在语义层，词汇和语义产生关联，文档也和语义产生关联。这样通过语义概念，可以将词项和文档放在一个语义空间中观察分析。比如文档分类问题，隐含的主题可以理解为文档属于什么主题的文档(体育，娱乐，科技等)，LSA使用SVD分解来求解，下面以一个例子来说明，假设有3个文档</p>
-<center><br><img src="../image/8.jpg" alt=""><br></center>
+<center><br><img src="/img/8.jpg" alt=""><br></center>
 
 <p>查询词：gold silver truck<br>首先把文档分词组织成一个二维矩阵，查询词组织成一个向量，如下</p>
-<center><br><img src="../image/9.jpg" alt=""><br></center>
+<center><br><img src="/img/9.jpg" alt=""><br></center>
 
 <p>对矩阵$A$进行SVD分解，结果如下</p>
-<center><br><img src="../image/10.jpg" alt=""><br></center>
+<center><br><img src="/img/10.jpg" alt=""><br></center>
 
 <p>只保留2个奇异值，则变为</p>
-<center><br><img src="../image/11.jpg" alt=""><br></center><br>这样可以求得三个文档在语义空间上的映射为<br><center><br>d1(-0.4945, 0.6492)<br>d2(-0.6458, -0.7194)<br>d3(-0.5817, 0.2469)<br></center>
+<center><br><img src="/img/11.jpg" alt=""><br></center><br>这样可以求得三个文档在语义空间上的映射为<br><center><br>d1(-0.4945, 0.6492)<br>d2(-0.6458, -0.7194)<br>d3(-0.5817, 0.2469)<br></center>
 
 <p>将查询词映射到语义空间</p>
-<center><br><img src="../image/12.jpg" alt=""><br></center>
+<center><br><img src="/img/12.jpg" alt=""><br></center>
 
 <p>这样就可以用相似性来度量查询词跟文档的相关性了</p>
-<center><br><img src="../image/13.jpg" alt=""><br></center>
+<center><br><img src="/img/13.jpg" alt=""><br></center>
 </m$，通过正交化将其扩展为$r^{m}$上的正交基>
       
     </div>
