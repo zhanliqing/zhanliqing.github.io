@@ -271,6 +271,158 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/merge-small-file/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jingchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎光临我的技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/24/merge-small-file/" itemprop="url">
+                  hdfs小文件合并存在的问题
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T22:58:28+08:00">
+                2017-04-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">hadoop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/24/merge-small-file/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/04/24/merge-small-file/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在hdfs中，如果存在很多小文件，不但浪费存储空间，而且占用大量namenode的内存，一种可行的方案是把小文件合并为一个大文件，今天就说一下合并小文件经历的问题</p>
+<p>如果在hdfs中有很多gzip压缩的小文件，合并可以通过一个mr程序来实现，把reduce的个数设置为一个远小于输入文件的个数，但可能会有一个比较奇怪的现象，就是合并后的文件大小跟合并前文件大小不一致，为什么呢，没研究过gzip算法，我猜测gzip压缩可能会联系上下文信息进行压缩，也就是如果相邻行相同的内容挨在一起，压缩比率会更大，做个小实验</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span>  test cat g_log.sh</div><div class="line">line=`seq 1 1000000`</div><div class="line"></div><div class="line">chars=("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \</div><div class="line">       "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" \</div><div class="line">       "ccccccccccccccccccccccccccccccccccccccc" \</div><div class="line">       "ddddddddddddddddddddddddddddddddddddddd" \</div><div class="line">       "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" \</div><div class="line">       "fffffffffffffffffffffffffffffffffffffff" \</div><div class="line">       "ggggggggggggggggggggggggggggggggggggggg")</div><div class="line"></div><div class="line">echo $&#123;#chars[@]&#125;</div><div class="line"></div><div class="line">for i in $line ;do</div><div class="line">    id=$(($RANDOM%7))</div><div class="line">    echo $&#123;chars[$id]&#125;,$i,$id &gt;&gt;tmp</div><div class="line">done</div><div class="line"><span class="meta">$</span>  test ll tmp</div><div class="line">-rw-rw-r--. 1 zlq zlq 47M Apr 24 23:27 tmp	</div><div class="line"><span class="meta"></span></div><div class="line">$  test cat tmp|gzip &gt;tmp.gz</div><div class="line"><span class="meta">$</span>  test cat tmp|sort|gzip &gt;tmp1.gz</div><div class="line"><span class="meta">$</span>  test ll</div><div class="line">-rw-rw-r--. 1 zlq zlq  480 Apr 24 23:26 g_log.sh</div><div class="line">-rw-rw-r--. 1 zlq zlq  47M Apr 24 23:27 tmp</div><div class="line">-rw-rw-r--. 1 zlq zlq 2.9M Apr 24 23:28 tmp1.gz</div><div class="line">-rw-rw-r--. 1 zlq zlq 3.5M Apr 24 23:28 tmp.gz</div></pre></td></tr></table></figure>
+<p>可以看到排序后的压缩更高，因此多个小文件合并，如果直接进行repartition，则压缩前后大小不一致，如果源文件是相同key的在一起，则重排后可能文件大小可能会变大，一种办法是在map中分key写，但这样程序不同用，在spark中有一个变化叫coalesce，他不会引起数据的repartition，因此可以用他来实现文件合并，实例代码如下</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.text.<span class="type">SimpleDateFormat</span></div><div class="line"><span class="keyword">import</span> java.util.<span class="type">Calendar</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> org.apache.hadoop.io.compress.<span class="type">GzipCodec</span></div><div class="line"><span class="keyword">import</span> org.apache.spark.&#123;<span class="type">SparkConf</span>, <span class="type">SparkContext</span>&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line">  * Created by liqing.zhan on 2017/4/24.</div><div class="line">  */</div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">SmallFileMerge</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]) &#123;</div><div class="line">        <span class="keyword">val</span> conf: <span class="type">SparkConf</span> = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"merge_small_file"</span>)</div><div class="line">        <span class="keyword">val</span> context: <span class="type">SparkContext</span> = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</div><div class="line">        <span class="keyword">var</span> start = args(<span class="number">0</span>).toInt</div><div class="line">        <span class="keyword">val</span> end = args(<span class="number">1</span>).toInt</div><div class="line"></div><div class="line">        <span class="keyword">val</span> path = args(<span class="number">2</span>)</div><div class="line"></div><div class="line">        <span class="keyword">val</span> partitions = args(<span class="number">3</span>).toInt</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (end &lt; start) <span class="keyword">return</span></div><div class="line"></div><div class="line">        do &#123;</div><div class="line">            <span class="keyword">val</span> sc = context.textFile(path + <span class="string">"/"</span> + start)</div><div class="line">            sc.coalesce(partitions).saveAsTextFile(path + <span class="string">"/"</span> + start + <span class="string">"_bak"</span>, classOf[<span class="type">GzipCodec</span>])</div><div class="line">            println(<span class="string">"process %s"</span>.format(start))</div><div class="line">            start = addDate(start, <span class="number">1</span>)</div><div class="line">        &#125; <span class="keyword">while</span> (start &lt;= end)</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">addDate</span></span>(day: <span class="type">Int</span>, c: <span class="type">Int</span>): <span class="type">Int</span> = &#123;</div><div class="line">        <span class="keyword">val</span> dateFormat: <span class="type">SimpleDateFormat</span> = <span class="keyword">new</span> <span class="type">SimpleDateFormat</span>(<span class="string">"yyyyMMdd"</span>)</div><div class="line">        <span class="keyword">val</span> day1 = dateFormat.parse(day + <span class="string">""</span>)</div><div class="line">        <span class="keyword">val</span> cal: <span class="type">Calendar</span> = <span class="type">Calendar</span>.getInstance</div><div class="line">        cal.setTime(day1)</div><div class="line">        cal.add(<span class="type">Calendar</span>.<span class="type">DAY_OF_MONTH</span>, c)</div><div class="line">        dateFormat.format(cal.getTime).toInt</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/06/matrix decomposition/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -318,6 +470,26 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -1762,7 +1934,7 @@ jq ‘[.[] | {message: .commit.message, name: .commit.committer.name, parents: [
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1773,7 +1945,7 @@ jq ‘[.[] | {message: .commit.message, name: .commit.committer.name, parents: [
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1784,7 +1956,7 @@ jq ‘[.[] | {message: .commit.message, name: .commit.committer.name, parents: [
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
