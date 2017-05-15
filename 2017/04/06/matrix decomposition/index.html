@@ -110,7 +110,7 @@
 <meta property="og:image" content="http://yoursite.com/img/11.jpg">
 <meta property="og:image" content="http://yoursite.com/img/12.jpg">
 <meta property="og:image" content="http://yoursite.com/img/13.jpg">
-<meta property="og:updated_time" content="2017-04-24T15:00:47.577Z">
+<meta property="og:updated_time" content="2017-04-26T15:46:36.915Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="矩阵分解及其应用">
 <meta name="twitter:description" content="预备   定义1，给定一个由\(n\)维向量集合组成的集合\(V\)，如果集合\(V\)非空并且对于任意集合\(V\)中的向量，满足如下两个条件    若\(a\in V,b\in V\) ,则\(a+b\in V\)；  若\(a\in V,\lambda \in R\)，则\(\lambda a \in V\)； 则称集合\(V\)为向量空间   定义1说明在向量空间">
@@ -441,7 +441,7 @@ x_{1} &amp;x_{2}  &amp; \cdots  &amp; x_{n}
  0&amp; 0 &amp; 0 &amp; 1
 \end{bmatrix}
 \Longrightarrow
-a_{i}^{T}a_{j}=\delta_{ij}
+x_{i}^{T}x_{j}=\delta_{ij}
 =
 \left\{\begin{matrix}
 1,如果i=j\\ 
@@ -648,7 +648,7 @@ L(b)=L(a)P \\ \Rightarrow
 <p>也就是说，两个矩阵相似，表示这两个矩阵是在不同的基表示下的同一个线性变换，特别，可逆矩阵<span class="math inline">\(P\)</span>为两个基的过渡矩阵</p>
 <h4 id="特征值及特征向量的意义">特征值及特征向量的意义</h4>
 <p>根据矩阵相似的意义，方阵<span class="math inline">\(A\)</span>的特征值分解可以理解两个不同基下的同一个变换，其中特征向量组成的矩阵是两个变换的过渡矩阵，特别的，假设其中一个基是自然基，则另一个基为<span class="math inline">\(P\)</span>或者<span class="math inline">\(P^{-1}\)</span>，假设对角阵对应的基为自然基，则方阵<span class="math inline">\(A\)</span>对应的基为<span class="math inline">\(P\)</span>，也就是向量<span class="math inline">\(A\)</span>的变换是对自然基组成的向量做特征值大小的缩放。</p>
-<p>从线性空间的角度看，在一个定义了内积的线性空间里，对一个<span class="math inline">\(n\)</span>阶对称方阵进行特征分解，就是产生了该空间的<span class="math inline">\(n\)</span>个标准正交基，然后把矩阵投影到这<span class="math inline">\(n\)</span>个基上。<span class="math inline">\(n\)</span>个特征向量就是<span class="math inline">\(n\)</span>个标准正交基，因为对称方阵的特征向量是一个正交矩阵，所以，而特征值的模则代表矩阵在每个基上的投影长度。特征值越大，说明矩阵在对应的特征向量上的方差越大，功率越大，信息量越多。</p>
+<p>从线性空间的角度看，在一个定义了内积的线性空间里，对一个<span class="math inline">\(n\)</span>阶对称方阵进行特征分解，就是产生了该空间的<span class="math inline">\(n\)</span>个标准正交基，然后把矩阵投影到这<span class="math inline">\(n\)</span>个基上。<span class="math inline">\(n\)</span>个特征向量就是<span class="math inline">\(n\)</span>个标准正交基，因为对称方阵的特征向量是一个正交矩阵，所以，N个特征向量就是N个标准正交基，而特征值的模则代表矩阵在每个基上的投影长度。而特征值的模则代表矩阵在每个基上的投影长度。特征值越大，说明矩阵在对应的特征向量上的方差越大，功率越大，信息量越多。</p>
 <p>对于小方阵，特征值及特征向量可以通过定义来求得。下面来看怎么求特征值及特征向量，由定义式可有 <span class="math display">\[(A-\lambda E)x=0 \tag{21}\]</span> 这是一个<span class="math inline">\(n\)</span>个未知数<span class="math inline">\(n\)</span>个方程的齐次线性方程组，因它有非零解的条件是特征多项式为<span class="math inline">\(0\)</span>，即 <span class="math display">\[\left |A-\lambda E  \right |=0 \tag{22}\]</span></p>
 <p>假设<span class="math inline">\(n\)</span>阶方阵<span class="math inline">\(A\)</span>的特征值分别为<span class="math inline">\(\lambda_{1},\lambda_{2},\cdots,\lambda_{n}\)</span>，特征值有如下性质<br>
 * 1) <span class="math inline">\(\lambda_{1}+\lambda_{2}+\cdots+\lambda_{n} = a_{11}+a_{22}+\cdots+a_{nn}\)</span><br>
@@ -658,7 +658,7 @@ L(b)=L(a)P \\ \Rightarrow
 <p>根据特征值分解的描述，特征值的大小可以看成矩阵在某一方向的拉伸大小，如果矩阵在某些方向上的拉伸比较小，也就是特征值比较小，如果不考虑这些特征值的影响，矩阵的变换作用影响不大，因此可以用特征值分解来降维。</p>
 <p>上面讲的特征值分解是针对方阵的，那么对于普通的矩阵，会有这样的分解吗？其实，对于任何矩阵矩阵<span class="math inline">\(A_{mn}\)</span>，存在一个正交矩阵<span class="math inline">\(U_{mm}\)</span>，一个正交矩阵<span class="math inline">\(V_{nn}\)</span>，一个对角矩阵<span class="math inline">\(\Lambda_{mn}\)</span>，使得</p>
 <p><span class="math display">\[A_{mn}=U_{mm}\Lambda_{mn}V^{T}_{nn} \tag{23}\]</span> 成立，这就是矩阵的奇异值分解。</p>
-<p>首先对于任何<span class="math inline">\(A_{mn}\)</span>，都有<span class="math inline">\(A^{T}A\)</span>是对称矩阵，根据对称矩阵的特征分解，有 <span class="math display">\[A=Q\Sigma Q^{-1} \tag{24}\]</span></p>
+<p>首先对于任何<span class="math inline">\(A_{mn}\)</span>，都有<span class="math inline">\(A^{T}A\)</span>是对称矩阵，根据对称矩阵的特征分解，有 <span class="math display">\[A^{T}A=Q\Sigma Q^{-1} \tag{24}\]</span></p>
 <p>假设我们得到一组正交基<span class="math inline">\({v_1,v_2,\cdots,v_n}\)</span>，即<span class="math inline">\(A^{T}Av_i = \lambda_iv_i\)</span>，下面看对正交基进行<span class="math inline">\(A\)</span>线性变换的向量组<span class="math inline">\({Av_1,Av_2,\cdots,Av_n}\)</span></p>
 <p><span class="math display">\[(Av_{i},Av_{j})\\
 =(Av_{i})^{T}(Av_{j})\\
@@ -830,8 +830,8 @@ d3(-0.5817, 0.2469)
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/04/24/merge-small-file/" rel="next" title="hdfs小文件合并存在的问题">
-                <i class="fa fa-chevron-left"></i> hdfs小文件合并存在的问题
+              <a href="/2017/04/13/matrix-decomposition-application-in-recommand-system/" rel="next" title="推荐算法简介及矩阵分解在推荐系统中的应用">
+                <i class="fa fa-chevron-left"></i> 推荐算法简介及矩阵分解在推荐系统中的应用
               </a>
             
           </div>
@@ -918,7 +918,7 @@ d3(-0.5817, 0.2469)
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -929,7 +929,7 @@ d3(-0.5817, 0.2469)
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -940,7 +940,7 @@ d3(-0.5817, 0.2469)
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

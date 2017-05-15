@@ -378,8 +378,209 @@
             <p>在hdfs中，如果存在很多小文件，不但浪费存储空间，而且占用大量namenode的内存，一种可行的方案是把小文件合并为一个大文件，今天就说一下合并小文件经历的问题</p>
 <p>如果在hdfs中有很多gzip压缩的小文件，合并可以通过一个mr程序来实现，把reduce的个数设置为一个远小于输入文件的个数，但可能会有一个比较奇怪的现象，就是合并后的文件大小跟合并前文件大小不一致，为什么呢，没研究过gzip算法，我猜测gzip压缩可能会联系上下文信息进行压缩，也就是如果相邻行相同的内容挨在一起，压缩比率会更大，做个小实验</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span>  test cat g_log.sh</div><div class="line">line=`seq 1 1000000`</div><div class="line"></div><div class="line">chars=("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \</div><div class="line">       "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" \</div><div class="line">       "ccccccccccccccccccccccccccccccccccccccc" \</div><div class="line">       "ddddddddddddddddddddddddddddddddddddddd" \</div><div class="line">       "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" \</div><div class="line">       "fffffffffffffffffffffffffffffffffffffff" \</div><div class="line">       "ggggggggggggggggggggggggggggggggggggggg")</div><div class="line"></div><div class="line">echo $&#123;#chars[@]&#125;</div><div class="line"></div><div class="line">for i in $line ;do</div><div class="line">    id=$(($RANDOM%7))</div><div class="line">    echo $&#123;chars[$id]&#125;,$i,$id &gt;&gt;tmp</div><div class="line">done</div><div class="line"><span class="meta">$</span>  test ll tmp</div><div class="line">-rw-rw-r--. 1 zlq zlq 47M Apr 24 23:27 tmp	</div><div class="line"><span class="meta"></span></div><div class="line">$  test cat tmp|gzip &gt;tmp.gz</div><div class="line"><span class="meta">$</span>  test cat tmp|sort|gzip &gt;tmp1.gz</div><div class="line"><span class="meta">$</span>  test ll</div><div class="line">-rw-rw-r--. 1 zlq zlq  480 Apr 24 23:26 g_log.sh</div><div class="line">-rw-rw-r--. 1 zlq zlq  47M Apr 24 23:27 tmp</div><div class="line">-rw-rw-r--. 1 zlq zlq 2.9M Apr 24 23:28 tmp1.gz</div><div class="line">-rw-rw-r--. 1 zlq zlq 3.5M Apr 24 23:28 tmp.gz</div></pre></td></tr></table></figure>
-<p>可以看到排序后的压缩更高，因此多个小文件合并，如果直接进行repartition，则压缩前后大小不一致，如果源文件是相同key的在一起，则重排后可能文件大小可能会变大，一种办法是在map中分key写，但这样程序不同用，在spark中有一个变化叫coalesce，他不会引起数据的repartition，因此可以用他来实现文件合并，实例代码如下</p>
+<p>可以看到排序后的压缩更高，因此多个小文件合并，如果直接进行repartition，则压缩前后大小不一致，如果源文件是相同key的在一起，则重排后可能文件大小可能会变大，一种办法是在map中分key写，但这样程序不通用，在spark中有一个变化叫coalesce，他不会引起数据的repartition，因此可以用他来实现文件合并，事例代码如下</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.text.<span class="type">SimpleDateFormat</span></div><div class="line"><span class="keyword">import</span> java.util.<span class="type">Calendar</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> org.apache.hadoop.io.compress.<span class="type">GzipCodec</span></div><div class="line"><span class="keyword">import</span> org.apache.spark.&#123;<span class="type">SparkConf</span>, <span class="type">SparkContext</span>&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line">  * Created by liqing.zhan on 2017/4/24.</div><div class="line">  */</div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">SmallFileMerge</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]) &#123;</div><div class="line">        <span class="keyword">val</span> conf: <span class="type">SparkConf</span> = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"merge_small_file"</span>)</div><div class="line">        <span class="keyword">val</span> context: <span class="type">SparkContext</span> = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</div><div class="line">        <span class="keyword">var</span> start = args(<span class="number">0</span>).toInt</div><div class="line">        <span class="keyword">val</span> end = args(<span class="number">1</span>).toInt</div><div class="line"></div><div class="line">        <span class="keyword">val</span> path = args(<span class="number">2</span>)</div><div class="line"></div><div class="line">        <span class="keyword">val</span> partitions = args(<span class="number">3</span>).toInt</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (end &lt; start) <span class="keyword">return</span></div><div class="line"></div><div class="line">        do &#123;</div><div class="line">            <span class="keyword">val</span> sc = context.textFile(path + <span class="string">"/"</span> + start)</div><div class="line">            sc.coalesce(partitions).saveAsTextFile(path + <span class="string">"/"</span> + start + <span class="string">"_bak"</span>, classOf[<span class="type">GzipCodec</span>])</div><div class="line">            println(<span class="string">"process %s"</span>.format(start))</div><div class="line">            start = addDate(start, <span class="number">1</span>)</div><div class="line">        &#125; <span class="keyword">while</span> (start &lt;= end)</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">addDate</span></span>(day: <span class="type">Int</span>, c: <span class="type">Int</span>): <span class="type">Int</span> = &#123;</div><div class="line">        <span class="keyword">val</span> dateFormat: <span class="type">SimpleDateFormat</span> = <span class="keyword">new</span> <span class="type">SimpleDateFormat</span>(<span class="string">"yyyyMMdd"</span>)</div><div class="line">        <span class="keyword">val</span> day1 = dateFormat.parse(day + <span class="string">""</span>)</div><div class="line">        <span class="keyword">val</span> cal: <span class="type">Calendar</span> = <span class="type">Calendar</span>.getInstance</div><div class="line">        cal.setTime(day1)</div><div class="line">        cal.add(<span class="type">Calendar</span>.<span class="type">DAY_OF_MONTH</span>, c)</div><div class="line">        dateFormat.format(cal.getTime).toInt</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="借助combinefileinputformat">借助CombineFileInputFormat</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 合并小文件工具，依赖CombineFileInputFormat类</div><div class="line"> * 传入三个参数，</div><div class="line"> * args1:合并文件的最大值，如果用gzip压缩，设置大点，1000M左右</div><div class="line"> * args2:input path</div><div class="line"> * args3:output path</div><div class="line"> *</div><div class="line"> * &lt;p&gt;</div><div class="line"> * &lt;p&gt;</div><div class="line"> * Created by liqing.zhan on 2017/5/15.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MergeSmallFile</span> <span class="keyword">extends</span> <span class="title">Configured</span> <span class="keyword">implements</span> <span class="title">Tool</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Logger log = Logger.getLogger(MergeSmallFile.class);</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> MB = <span class="number">1024</span> * <span class="number">1024L</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> exitCode = <span class="number">0</span>;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            exitCode = ToolRunner.run(<span class="keyword">new</span> MergeSmallFile(), args);</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            log.error(<span class="string">"merge small file exception "</span>, e);</div><div class="line">        &#125;</div><div class="line">        System.exit(exitCode);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">run</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        Configuration conf = <span class="keyword">new</span> Configuration(getConf());</div><div class="line">        <span class="keyword">int</span> maxSize = Integer.parseInt(args[<span class="number">0</span>]);</div><div class="line">        conf.setLong(<span class="string">"mapreduce.input.fileinputformat.split.maxsize"</span>, MB * maxSize);</div><div class="line">        conf.setBoolean(<span class="string">"mapred.output.compress"</span>, <span class="keyword">true</span>);</div><div class="line">        conf.setClass(<span class="string">"mapred.output.compression.codec"</span>, GzipCodec.class, CompressionCodec.class);</div><div class="line">        conf.set(<span class="string">"mapred.job.queue.name"</span>, <span class="string">"yourqueue"</span>);</div><div class="line">        conf.set(<span class="string">"mapred.job.priority"</span>, JobPriority.VERY_HIGH.name());</div><div class="line">        conf.set(<span class="string">"mapreduce.task.timeout"</span>, <span class="string">"6000000"</span>);</div><div class="line"></div><div class="line"></div><div class="line">        Job job = Job.getInstance(conf);</div><div class="line">        job.setJobName(<span class="string">"merge_smallfile.liqing.zhan"</span>);</div><div class="line">        FileInputFormat.setInputPaths(job, <span class="keyword">new</span> Path(args[<span class="number">1</span>]));</div><div class="line">        FileOutputFormat.setOutputPath(job, <span class="keyword">new</span> Path(args[<span class="number">2</span>]));</div><div class="line">        job.setJarByClass(MergeSmallFile.class);</div><div class="line">        job.setInputFormatClass(CombineTextInputFormat.class);</div><div class="line">        job.setMapOutputKeyClass(NullWritable.class);</div><div class="line">        job.setOutputValueClass(Text.class);</div><div class="line">        job.setOutputFormatClass(TextOutputFormat.class);</div><div class="line">        job.setOutputKeyClass(NullWritable.class);</div><div class="line">        job.setOutputValueClass(Text.class);</div><div class="line">        job.setMapperClass(PureMapper.class);</div><div class="line">        job.setNumReduceTasks(<span class="number">0</span>);</div><div class="line"></div><div class="line">        <span class="keyword">return</span> job.waitForCompletion(<span class="keyword">true</span>) ? <span class="number">0</span> : <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PureMapper</span> <span class="keyword">extends</span> <span class="title">Mapper</span>&lt;<span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">NullWritable</span>, <span class="title">Text</span>&gt; </span>&#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">map</span><span class="params">(LongWritable key, Text value, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</div><div class="line">            context.write(NullWritable.get(), value);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>还有一个问题，如果小文件是hive的数据源，并且hive的表结构中途增加过字段，则用add partition增加分区后，查询输出的内容可能不一致。</p>
+<p>例如假设有如下建表语句 <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">EXTERNAL</span> <span class="keyword">TABLE</span> <span class="string">`test_zz`</span>(</div><div class="line">  <span class="string">`a1`</span> <span class="keyword">string</span>, </div><div class="line">  <span class="string">`a2`</span> <span class="keyword">string</span>, </div><div class="line">  <span class="string">`a3`</span> <span class="keyword">string</span>)</div><div class="line">PARTITIONED <span class="keyword">BY</span> ( </div><div class="line">  <span class="string">`day`</span> <span class="built_in">int</span>)</div><div class="line"><span class="keyword">ROW</span> <span class="keyword">FORMAT</span> <span class="keyword">DELIMITED</span> </div><div class="line">  <span class="keyword">FIELDS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">'\t'</span> </div><div class="line">  <span class="keyword">LINES</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">'\n'</span> </div><div class="line"><span class="keyword">STORED</span> <span class="keyword">AS</span> INPUTFORMAT </div><div class="line">  <span class="string">'org.apache.hadoop.mapred.TextInputFormat'</span> </div><div class="line">OUTPUTFORMAT </div><div class="line">  <span class="string">'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'</span></div><div class="line">LOCATION</div><div class="line">  <span class="string">'hdfs://qunarcluster/user/wirelessdev/liqing.zhan/hive'</span></div></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/13/matrix-decomposition-application-in-recommand-system/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jingchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎光临我的技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/13/matrix-decomposition-application-in-recommand-system/" itemprop="url">
+                  推荐算法简介及矩阵分解在推荐系统中的应用
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-13T18:53:21+08:00">
+                2017-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/13/matrix-decomposition-application-in-recommand-system/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/04/13/matrix-decomposition-application-in-recommand-system/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介">简介</h2>
+<p>推荐算法是推荐系统的核心，推荐算法可以分为如下几类:</p>
+<ul>
+<li>基于内容的推荐<br>
+</li>
+<li>基于协同过滤推荐<br>
+</li>
+<li>基于关联规则的推荐<br>
+</li>
+<li>混合推荐</li>
+</ul>
+<h5 id="基于内容的推荐">基于内容的推荐</h5>
+<p>基于内容推荐(Content-based Recommendations)是很早的一种推荐方法，他是基于item特征和用户profile来建模，也就是根据item基础属性及历史数据抽取item的行为特征，根据用户历史行为数据（例如评价、分享、点赞等行为）抽取用户的profile数据，然后根据item和用户特征，为用户推荐一组相关性最大的item。</p>
+<p><a href="http://www.cnblogs.com/breezedeus/archive/2012/04/10/2440488.html" target="_blank" rel="external">举个例子</a> ,对于个性化阅读来说，一个item就是一篇文章。根据上面的第一步，我们首先要从文章内容中抽取出代表它们的属性。常用的方法就是利用出现在一篇文章中词来代表这篇文章，而每个词对应的权重往往使用信息检索中的tf-idf来计算。比如对于本文来说，词“CB”、“推荐”和“喜好”的权重会比较大，而“烤肉”这个词的权重会比较低。利用这种方法，一篇抽象的文章就可以使用具体的一个向量来表示了。第二步就是根据用户过去喜欢什么文章来产生刻画此用户喜好的 profile了，最简单的方法可以把用户所有喜欢的文章对应的向量的平均值作为此用户的profile。比如某个用户经常关注与推荐系统有关的文章，那么他的profile中“CB”、“CF”和“推荐”对应的权重值就会较高。在获得了一个用户的profile后，CB就可以利用所有item与此用户profile的相关度对他进行推荐文章了。一个常用的相关度计算方法是cosine。最终把候选item里与此用户最相关（cosine值最大）的N个item作为推荐返回给此用户。举个例子说明前面的三个步骤。对于个性化阅读来说，一个item就是一篇文章。根据上面的第一步，我们首先要从文章内容中抽取出代表它们的属性。常用的方法就是利用出现在一篇文章中词来代表这篇文章，而每个词对应的权重往往使用信息检索中的tf-idf来计算。比如对于本文来说，词“CB”、“推荐”和“喜好”的权重会比较大，而“烤肉”这个词的权重会比较低。利用这种方法，一篇抽象的文章就可以使用具体的一个向量来表示了。第二步就是根据用户过去喜欢什么文章来产生刻画此用户喜好的 profile了，最简单的方法可以把用户所有喜欢的文章对应的向量的平均值作为此用户的profile。比如某个用户经常关注与推荐系统有关的文章，那么他的profile中“CB”、“CF”和“推荐”对应的权重值就会较高。在获得了一个用户的profile后，CB就可以利用所有item与此用户profile的相关度对他进行推荐文章了。一个常用的相关度计算方法是cosine。最终把候选item里与此用户最相关（cosine值最大）的N个item作为推荐返回给此用户。</p>
+<p>有了特征，就可以应用监督学习来学习一个模型，使用这个模型对item进行打分，选出最大的几个item来作为推荐结果，大部分监督学习算法都可以应用到这里，如线性回归，逻辑回归，决策树等</p>
+<h5 id="基于协同过滤推荐">基于协同过滤推荐</h5>
+<p>协同过滤（ CF）推荐算法通过在用户活动中寻找特定模式来为用户产生有效推荐。它依赖于系统中用户的惯用数据，例如通过用户对其阅读过书籍的评价可以推断出用户的阅读偏好。这种算法的核心思想就是：如果两个用户对于一些项的评分相似程度较高，那么一个用户对于一个新项的评分很有可能类似于另一个用户。值得注意的是，他们推荐的时候不依赖于项的任何附加信息（ 例如描述、元数据等等）或者用户的任何附加信息（例如喜好、人口统计相关数据等等）。 CF 的方法大体可分为两类：分别为邻域和基于模型的方法。邻域方法（即基于内存的 CF）是使用用户对已有项的评分直接预测该用户对新项的评分。与之相反，基于模型的方法是使用历史评分数据，基于学习出的预测模型，预测对新项的评分。通常的方式是使用机器学习算法，找出用户与项的相互作用模型，从而找出数据中的特定模式。</p>
+<h5 id="基于关联规则的推荐">基于关联规则的推荐</h5>
+<p>基于关联规则的推荐（Association Rule-based Recommendation）是以关联规则为基础，把已购商品作为规则头，规则体为推荐对象。关联规则挖掘可以发现不同商品在销售过程中的相关性，在零售业中已经得到了成功的应用。管理规则就是在一个交易数据库中统计购买了商品集X的交易中有多大比例的交易同时购买了商品集Y，其直观的意义就是用户在购买某些商品的时候有多大倾向去购买另外一些商品。比如购买牛奶的同时很多人会同时购买面包。 #####混合推荐##### <a href="http://blog.sina.com.cn/s/blog_602feaa80100fjq9.html" target="_blank" rel="external">由于各种推荐方法</a>都有优缺点，所以在实际中，组合推荐（Hybrid Recommendation）经常被采用。研究和应用最多的是内容推荐和协同过滤推荐的组合。最简单的做法就是分别用基于内容的方法和协同过滤推荐方法去产生一个推荐预测结果，然后用某方法组合其结果。尽管从理论上有很多种推荐组合方法，但在某一具体问题中并不见得都有效，组合推荐一个最重要原则就是通过组合后要能避免或弥补各自推荐技术的弱点。 在组合方式上，有研究人员提出了七种组合思路： 1）加权（Weight）：加权多种推荐技术结果。 2）变换（Switch）：根据问题背景和实际情况或要求决定变换采用不同的推荐技术。 3）混合（Mixed）：同时采用多种推荐技术给出多种推荐结果为用户提供参考。 4）特征组合（Feature combination）：组合来自不同推荐数据源的特征被另一种推荐算法所采用。 5）层叠（Cascade）：先用一种推荐技术产生一种粗糙的推荐结果，第二种推荐技术在此推荐结果的基础上进一步作出更精确的推荐。 6）特征扩充（Feature augmentation）：一种技术产生附加的特征信息嵌入到另一种推荐技术的特征输入中。 7）元级别（Meta-level）：用一种推荐方法产生的模型作为另一种推荐方法的输入。</p>
+<h5 id="矩阵分解在推荐系统的应用">矩阵分解在推荐系统的应用</h5>
+<p>在推荐系统中，我们常常遇到的问题是这样的，我们有很多用户和物品，也有少部分用户对少部分物品的评分，我们希望预测目标用户对其他未评分物品的评分，进而将评分高的物品推荐给目标用户。比如下面的用户物品评分表：</p>
+<center>
+<img src="../img/14.jpg">
+</center>
+<p>协同过滤算法的思想是找用户相似的或者item相似的来做推荐，而矩阵分解的思想是通过一种方法计算出未知的评分，推荐系统基于这样一个假设：用户对项目的打分越高，表明用户越喜欢。因此，预测出用户对未评分项目的评分后，根据分值大小排序，把分值高的项目推荐给用户。</p>
+<p>任何矩阵都可以进行奇异值分解，即对于一个<span class="math inline">\(m*n\)</span>矩阵，都有</p>
+<p><span class="math display">\[M_{m \times n}=U_{m \times k}\Sigma_{k \times k}V_{k \times n}^T \tag{1}\]</span></p>
+<p>这样我们来求第i个用户对第j个物品的评分<span class="math inline">\(m_{ij}\)</span>，只需要计算<span class="math inline">\(u_i^T\Sigma v_j\)</span>，就可以得到得分。这里的前提是已经对矩阵做了分解，而奇异值分解要求矩阵不能有缺省值，因此最初始的解决方法是对缺失值填一个<span class="math inline">\(0\)</span>或者一个全局平均值。实际在推荐系统中用到的矩阵分解是一个伪奇异值分解，它假设对矩阵<span class="math inline">\(M\)</span>分解为两个矩阵乘积，即</p>
+<p><span class="math display">\[M_{m \times n}=P_{m \times k}^TQ_{k \times n} \tag{2}\]</span></p>
+<p>两个矩阵分别叫用户到隐因子的对应矩阵<span class="math inline">\(P\)</span>，和item到隐因子的对应矩阵<span class="math inline">\(Q\)</span>。例如假设有<span class="math inline">\(k\)</span>个隐因子，用户到隐因子的对应矩阵<span class="math inline">\(P\)</span>的每一行表示用户对每个隐因子的喜好程度，item到隐因子的对应矩阵<span class="math inline">\(Q\)</span>表示当前item属于这个隐因子的比重，则用户对一个item的评分可以用两个矩阵行列的点积来求得，其实在推荐系统中的矩阵分解就是隐因子模型</p>
+<p>怎么求解这两个矩阵？采用均方差作为损失函数，对于任意一个评分<span class="math inline">\(\hat{m}_{ij}\)</span>，有<span class="math inline">\(\hat{m}_{ij}=q_j^Tp_i\)</span>，因此均方误差的定义为</p>
+<p><span class="math display">\[L=\sum\limits_{i,j}(m_{ij}-q_j^Tp_i)^2 \tag{3}\]</span></p>
+<p>最小化均方误差，就可以求出两个矩阵，这样就可以矩阵的缺省值进行预测，这就是BASIC SVD算法</p>
+<p>为了防止过拟合，加入<span class="math inline">\(L2\)</span>正则，即损失函数定义为</p>
+<p><span class="math display">\[L=\underbrace{arg\;min}_{p_i,q_j}\;\sum\limits_{i,j}(m_{ij}-q_j^Tp_i)^2 + \lambda(||p_i||_2^2 + ||q_j||_2^2 ) \tag{4}\]</span></p>
+<p>通过梯度下降法来求，迭代公式为：</p>
+<p><span class="math display">\[\frac{\partial J}{\partial p_i} = -2(m_{ij}-q_j^Tp_i)q_j + 2\lambda p_i \tag{5}\]</span> <span class="math display">\[\frac{\partial J}{\partial q_j} = -2(m_{ij}-q_j^Tp_i)p_i + 2\lambda q_j \tag{6}\]</span> <span class="math display">\[p_i = p_i + \alpha((m_{ij}-q_j^Tp_i)q_j - \lambda p_i) \tag{7}\]</span> <span class="math display">\[q_j =q_j +  \alpha((m_{ij}-q_j^Tp_i)p_i - \lambda q_j) \tag{8}\]</span></p>
+<p>加入正则化的模型叫RSVD</p>
+<p>每个用户对item的评分取决于用户评分的习惯和item的质量，例如一个用户就是喜欢对item打高分，同时item的质量不一样，item质量高的就能得到用户的高的评分，因此加入用户的偏置和物品的偏置，即定义</p>
+<p><span class="math display">\[\hat{m}_{ij}=\mu+b_u+b_i+q_j^Tp_i \tag{9}\]</span></p>
+<p>其中，<span class="math inline">\(\mu\)</span>是全局平均分，在不同网站中，因为网站定位和销售的物品不同，网站的整体评分分布也会显示出一些差异。比如有些网站中的用户就是喜欢打高分，而另一些网站的用户就是喜欢打低分。而全局平均数可以表示网站本身对用户评分的影响。<span class="math inline">\(b_u\)</span>是用户<span class="math inline">\(u\)</span>的偏置项，这一项表示了用户的评分习惯中和物品没有关系的那种因素。比如有些用户就是比较苛刻，对什么东西要求都很高，那么他的评分就会偏低，而有些用户比较宽容，对什么东西都觉得不错，那么他的评分就会偏高。<span class="math inline">\(b_i\)</span>是item的偏置项，这一项表示了物品接受的评分中和用户没有什么关系的因素。比如有些物品本身质量就很高，因此获得的评分相对都比较高，而有些物品本身质量很差，因此获得的评分相对都会比较低。同样对偏置加上<span class="math inline">\(L2\)</span>正则，则加入偏置后，损失函数变为：</p>
+<p><span class="math display">\[L=\underbrace{arg\;min}_{p_i,q_j}\;\sum\limits_{i,j}(m_{ij}-\mu-b_i-b_j-q_j^Tp_i)^2 + \lambda(||p_i||_2^2 + ||q_j||_2^2 + ||b_i||_2^2 + ||b_j||_2^2) \tag{10}\]</span></p>
+<p><span class="math inline">\(p_i,q_j\)</span>的迭代公式不变，而<span class="math inline">\(b_u,b_j\)</span>的迭代公式为</p>
+<p><span class="math display">\[b_i = b_i + \alpha(m_{ij}-\mu-b_i-b_j-q_j^Tp_i -\lambda b_i) \tag{11}\]</span> <span class="math display">\[b_j = b_j + \alpha(m_{ij}-\mu-b_i-b_j-q_j^Tp_i -\lambda b_j) \tag{12}\]</span></p>
+<p>加入偏置的模型叫BSVD</p>
+<p>矩阵分解将矩阵分解为两个隐因子矩阵，很好的考虑了用户整体的关系，而没有考虑用户邻域之间的关系，而item-base协同过滤很好的考虑了用户的邻域关系，因此可以将两个模型融合。</p>
+<p>融合后的模型的损失函数定义为 <span class="math display">\[\underbrace{arg\;min}_{p_i,q_j}\;\sum\limits_{i,j}(m_{ij}-\mu-b_i-b_j-q_j^Tp_i - q_j^T|N(i)|^{-1/2}\sum\limits_{s \in N(i)}y_{s})^2+ \\ 
+\lambda(||p_i||_2^2 + ||q_j||_2^2 + ||b_i||_2^2 + ||b_j||_2^2 + \sum\limits_{s \in N(i)}||y_{s}||_2^2)\]</span></p>
+<p>这个模型称为SVD++</p>
+<h5 id="参考文献">参考文献</h5>
 
           
         
@@ -582,7 +783,7 @@ x_{1} &amp;x_{2}  &amp; \cdots  &amp; x_{n}
  0&amp; 0 &amp; 0 &amp; 1
 \end{bmatrix}
 \Longrightarrow
-a_{i}^{T}a_{j}=\delta_{ij}
+x_{i}^{T}x_{j}=\delta_{ij}
 =
 \left\{\begin{matrix}
 1,如果i=j\\ 
@@ -789,7 +990,7 @@ L(b)=L(a)P \\ \Rightarrow
 <p>也就是说，两个矩阵相似，表示这两个矩阵是在不同的基表示下的同一个线性变换，特别，可逆矩阵<span class="math inline">\(P\)</span>为两个基的过渡矩阵</p>
 <h4 id="特征值及特征向量的意义">特征值及特征向量的意义</h4>
 <p>根据矩阵相似的意义，方阵<span class="math inline">\(A\)</span>的特征值分解可以理解两个不同基下的同一个变换，其中特征向量组成的矩阵是两个变换的过渡矩阵，特别的，假设其中一个基是自然基，则另一个基为<span class="math inline">\(P\)</span>或者<span class="math inline">\(P^{-1}\)</span>，假设对角阵对应的基为自然基，则方阵<span class="math inline">\(A\)</span>对应的基为<span class="math inline">\(P\)</span>，也就是向量<span class="math inline">\(A\)</span>的变换是对自然基组成的向量做特征值大小的缩放。</p>
-<p>从线性空间的角度看，在一个定义了内积的线性空间里，对一个<span class="math inline">\(n\)</span>阶对称方阵进行特征分解，就是产生了该空间的<span class="math inline">\(n\)</span>个标准正交基，然后把矩阵投影到这<span class="math inline">\(n\)</span>个基上。<span class="math inline">\(n\)</span>个特征向量就是<span class="math inline">\(n\)</span>个标准正交基，因为对称方阵的特征向量是一个正交矩阵，所以，而特征值的模则代表矩阵在每个基上的投影长度。特征值越大，说明矩阵在对应的特征向量上的方差越大，功率越大，信息量越多。</p>
+<p>从线性空间的角度看，在一个定义了内积的线性空间里，对一个<span class="math inline">\(n\)</span>阶对称方阵进行特征分解，就是产生了该空间的<span class="math inline">\(n\)</span>个标准正交基，然后把矩阵投影到这<span class="math inline">\(n\)</span>个基上。<span class="math inline">\(n\)</span>个特征向量就是<span class="math inline">\(n\)</span>个标准正交基，因为对称方阵的特征向量是一个正交矩阵，所以，N个特征向量就是N个标准正交基，而特征值的模则代表矩阵在每个基上的投影长度。而特征值的模则代表矩阵在每个基上的投影长度。特征值越大，说明矩阵在对应的特征向量上的方差越大，功率越大，信息量越多。</p>
 <p>对于小方阵，特征值及特征向量可以通过定义来求得。下面来看怎么求特征值及特征向量，由定义式可有 <span class="math display">\[(A-\lambda E)x=0 \tag{21}\]</span> 这是一个<span class="math inline">\(n\)</span>个未知数<span class="math inline">\(n\)</span>个方程的齐次线性方程组，因它有非零解的条件是特征多项式为<span class="math inline">\(0\)</span>，即 <span class="math display">\[\left |A-\lambda E  \right |=0 \tag{22}\]</span></p>
 <p>假设<span class="math inline">\(n\)</span>阶方阵<span class="math inline">\(A\)</span>的特征值分别为<span class="math inline">\(\lambda_{1},\lambda_{2},\cdots,\lambda_{n}\)</span>，特征值有如下性质<br>
 * 1) <span class="math inline">\(\lambda_{1}+\lambda_{2}+\cdots+\lambda_{n} = a_{11}+a_{22}+\cdots+a_{nn}\)</span><br>
@@ -799,7 +1000,7 @@ L(b)=L(a)P \\ \Rightarrow
 <p>根据特征值分解的描述，特征值的大小可以看成矩阵在某一方向的拉伸大小，如果矩阵在某些方向上的拉伸比较小，也就是特征值比较小，如果不考虑这些特征值的影响，矩阵的变换作用影响不大，因此可以用特征值分解来降维。</p>
 <p>上面讲的特征值分解是针对方阵的，那么对于普通的矩阵，会有这样的分解吗？其实，对于任何矩阵矩阵<span class="math inline">\(A_{mn}\)</span>，存在一个正交矩阵<span class="math inline">\(U_{mm}\)</span>，一个正交矩阵<span class="math inline">\(V_{nn}\)</span>，一个对角矩阵<span class="math inline">\(\Lambda_{mn}\)</span>，使得</p>
 <p><span class="math display">\[A_{mn}=U_{mm}\Lambda_{mn}V^{T}_{nn} \tag{23}\]</span> 成立，这就是矩阵的奇异值分解。</p>
-<p>首先对于任何<span class="math inline">\(A_{mn}\)</span>，都有<span class="math inline">\(A^{T}A\)</span>是对称矩阵，根据对称矩阵的特征分解，有 <span class="math display">\[A=Q\Sigma Q^{-1} \tag{24}\]</span></p>
+<p>首先对于任何<span class="math inline">\(A_{mn}\)</span>，都有<span class="math inline">\(A^{T}A\)</span>是对称矩阵，根据对称矩阵的特征分解，有 <span class="math display">\[A^{T}A=Q\Sigma Q^{-1} \tag{24}\]</span></p>
 <p>假设我们得到一组正交基<span class="math inline">\({v_1,v_2,\cdots,v_n}\)</span>，即<span class="math inline">\(A^{T}Av_i = \lambda_iv_i\)</span>，下面看对正交基进行<span class="math inline">\(A\)</span>线性变换的向量组<span class="math inline">\({Av_1,Av_2,\cdots,Av_n}\)</span></p>
 <p><span class="math display">\[(Av_{i},Av_{j})\\
 =(Av_{i})^{T}(Av_{j})\\
@@ -1934,7 +2135,7 @@ jq ‘[.[] | {message: .commit.message, name: .commit.committer.name, parents: [
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1945,7 +2146,7 @@ jq ‘[.[] | {message: .commit.message, name: .commit.committer.name, parents: [
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1956,7 +2157,7 @@ jq ‘[.[] | {message: .commit.message, name: .commit.committer.name, parents: [
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
