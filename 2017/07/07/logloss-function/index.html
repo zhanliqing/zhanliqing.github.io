@@ -88,15 +88,19 @@
 
 
 
-<meta name="description" content="靖哥哥的技术博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="欢迎光临我的技术博客">
-<meta property="og:url" content="http://yoursite.com/tags/algorithm/index.html">
+<meta name="description" content="sigmoid是一个S型函数，它的函数图像如下    可以看到他是一个单调递增函数，值域是[0,1]，函数定义为 \[ f(t)=\frac1{1+e^{-t}}  \tag{1} \] 在机器学习中，sigmoid常作为激活函数或者非线性变换函数，首先看看它的导数 \[ f&amp;#39;(t)=(\frac1{1+e^{-t}})&amp;#39;=\frac{1}{1+e^{-t}}*\fr">
+<meta name="keywords">
+<meta property="og:type" content="article">
+<meta property="og:title" content="log loss及sigmoid函数">
+<meta property="og:url" content="http://yoursite.com/2017/07/07/logloss-function/index.html">
 <meta property="og:site_name" content="欢迎光临我的技术博客">
-<meta property="og:description" content="靖哥哥的技术博客">
+<meta property="og:description" content="sigmoid是一个S型函数，它的函数图像如下    可以看到他是一个单调递增函数，值域是[0,1]，函数定义为 \[ f(t)=\frac1{1+e^{-t}}  \tag{1} \] 在机器学习中，sigmoid常作为激活函数或者非线性变换函数，首先看看它的导数 \[ f&amp;#39;(t)=(\frac1{1+e^{-t}})&amp;#39;=\frac{1}{1+e^{-t}}*\fr">
+<meta property="og:image" content="http://yoursite.com/2017/07/07/img/sigmoid_pic.jpg">
+<meta property="og:updated_time" content="2017-07-08T15:46:10.474Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="欢迎光临我的技术博客">
-<meta name="twitter:description" content="靖哥哥的技术博客">
+<meta name="twitter:title" content="log loss及sigmoid函数">
+<meta name="twitter:description" content="sigmoid是一个S型函数，它的函数图像如下    可以看到他是一个单调递增函数，值域是[0,1]，函数定义为 \[ f(t)=\frac1{1+e^{-t}}  \tag{1} \] 在机器学习中，sigmoid常作为激活函数或者非线性变换函数，首先看看它的导数 \[ f&amp;#39;(t)=(\frac1{1+e^{-t}})&amp;#39;=\frac{1}{1+e^{-t}}*\fr">
+<meta name="twitter:image" content="http://yoursite.com/2017/07/07/img/sigmoid_pic.jpg">
 
 
 
@@ -124,13 +128,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/algorithm/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/07/07/logloss-function/"/>
 
 
 
 
 
-  <title> 标签: algorithm | 欢迎光临我的技术博客 </title>
+  <title> log loss及sigmoid函数 | 欢迎光临我的技术博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -155,7 +159,7 @@
     
   
 
-  <div class="container sidebar-position-left  ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -259,46 +263,177 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-collapse">
-    <div class="collection-title">
-      <h2 >
-        algorithm
-        <small>标签</small>
-      </h2>
-    </div>
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/07/logloss-function/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jingchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎光临我的技术博客">
+    </span>
 
     
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                log loss及sigmoid函数
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-07T22:41:31+08:00">
+                2017-07-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/07/logloss-function/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/07/07/logloss-function/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
       
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+      
+        <p>sigmoid是一个S型函数，它的函数图像如下</p>
+<center>
+<img src="../img/sigmoid_pic.jpg">
+</center>
+<p>可以看到他是一个单调递增函数，值域是[0,1]，函数定义为 <span class="math display">\[
+f(t)=\frac1{1+e^{-t}}  \tag{1}
+\]</span> 在机器学习中，sigmoid常作为激活函数或者非线性变换函数，首先看看它的导数 <span class="math display">\[
+f&#39;(t)=(\frac1{1+e^{-t}})&#39;=\frac{1}{1+e^{-t}}*\frac{e^{-t}}{1+e^{-t}}=(1-f(t))f(t)    \tag{2}
+\]</span> 再来看看它的其他性质 <span class="math display">\[f(-t)=\frac1{1+e^{t}}=\frac{e^t}{1+e^{-t}}=1-f(t) \tag{3}\]</span> <span class="math display">\[\Rightarrow f(t)+f(-t)==1\]</span></p>
+<p>因为它的值域是[0,1]，因此这个函数常用来定义概率分布函数，对于分类问题，如果定义属于某个类别的概率是<span class="math inline">\(f(x)\)</span>，则可以用极大似然估计来求得参数值，例如对于二分类，假设<span class="math inline">\(y\in(0,1)\)</span>，则似然函数为 <span class="math display">\[S(x)=f(x)^y(1-f(x))^{1-y} \tag{4}\]</span> 对似然函数取log后得 <span class="math display">\[log(S(x))=ylog(f(x))+(1-y)log(1-f(x)) \tag{5}\]</span>，化简得</p>
+<p><span class="math display">\[log(S(x))=ylog(f(x))+(1-y)log(1-f(x)) \]</span> <span class="math display">\[\Rightarrow log(S(x))=y[log(f(x))-log(1-f(x))] + log(1-f(x)) \tag{6}\]</span> <span class="math display">\[\Rightarrow log(S(x))=ylog(\frac {f(x)}{1-f(x)})+ log(1-f(x)) \tag{7} \]</span> <span class="math display">\[\Rightarrow log(S(x))=yw^Tx-log(1+e^{w^Tx}) \tag{8}\]</span></p>
+<p>而如果假设<span class="math inline">\(y\in(-1,1)\)</span>，则有<span class="math inline">\(\frac{1+y}{2}\in(0,1)\)</span>，同理有 <span class="math display">\[log(S(x))=\frac{1+y}{2}w^Tx-log(1+e^{w^Tx}) \tag{9}\]</span> 如果<span class="math inline">\(y=1\)</span>，则有 <span class="math display">\[log(S(x))=w^Tx-log(1+e^{w^Tx})=-log(1+e^{-w^Tx})  \tag{10}\]</span> 如果<span class="math inline">\(y=-1\)</span>，则有 <span class="math display">\[log(S(x))=-log(1+e^{w^Tx}) \tag{11}\]</span> 因此，损失对数损失函数可以写为 <span class="math display">\[log(S(x))=-log(1+e^{-yw^Tx}) \tag{12}\]</span></p>
+<p>对于<span class="math inline">\(y\in(0,1)\)</span>和<span class="math inline">\(y\in(-1,1)\)</span>损失函数的形式，也可以这样推导 首先对于<span class="math inline">\(y\in(0,1)\)</span>，有概率公式 <span class="math display">\[
+\begin{aligned}
+\mathbb{P}(y=1|z) &amp; =\sigma(z)=\frac{1}{1+e^{-z}}\\
+\mathbb{P}(y=0|z) &amp; =1-\sigma(z)=\frac{1}{1+e^{z}}\\
+\end{aligned} \tag{13}
+\]</span></p>
+<p>如果不考虑y的取值，可以写成 <span class="math display">\[\mathbb{P}(y|z)  =\sigma(z)^y(1-\sigma(z))^{1-y} \tag{14}\]</span> 而由于sigmoid的性质，<span class="math inline">\(1-\sigma(z)=\sigma(-z)\)</span>，因此，如果<span class="math inline">\(y\in(-1,1)\)</span>，在不考虑y的取值时，概率分布函数可以写成 <span class="math display">\[
+\mathbb{P}(y|z)=\sigma(yz) \tag{15}
+\]</span> 即概率分布函数可以写成 <span class="math display">\[\mathbb{P}(y|z)  =\frac{1}{1+e^{-yz}} \tag{16}\]</span></p>
 
-      <h1 class="post-title">
+      
+    </div>
+
+    <div>
+      
         
-            <a class="post-title-link" href="/2016/12/02/first/" itemprop="url">
-              
-                <span itemprop="name">first</span>
-              
-            </a>
+
+      
+    </div>
+
+    <div>
+      
         
-      </h1>
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-12-02T16:22:54+08:00"
-              content="2016-12-02" >
-          12-02
-        </time>
-      </div>
+      
+    </div>
 
-    </header>
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/26/install-lightgbm/" rel="prev" title="编译安装微软开源lightgbm工具">
+                编译安装微软开源lightgbm工具 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </article>
 
 
-    
-  </div>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -306,6 +441,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/07/07/logloss-function/"
+           data-title="log loss及sigmoid函数" data-url="http://yoursite.com/2017/07/07/logloss-function/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -501,6 +644,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
 
   
 
