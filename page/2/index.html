@@ -271,6 +271,526 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/08/java-Instrument/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jingchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎光临我的技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/08/java-Instrument/" itemprop="url">
+                  java Instrument 使用
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-08T16:57:25+08:00">
+                2017-03-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/08/java-Instrument/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/08/java-Instrument/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介">简介</h2>
+<p>Java在Java SE 5中提供了Instrumentation ，Instrumentation提供了通过Java方法来跟虚拟机交互的接口 JVM Tool interface，实际上是提供了一套代理机制，通过独立于JVM应用程序之外的程序来扩展修改应用程序，通过它可以对现有程序做一些扩展，比如系统监控，通过修改字节码可以实现接口相应时间，方法耗时，代码覆盖率等等功能，这样的特性实际上提供了一种虚拟机级别支持的AOP实现方式，使得开发者无需对JDK做任何升级和改动，就可以实现某些AOP的功能了。在Java SE 5中，代理程序需要在启动应用程序的时候执行代理jar包，在应用程序启动之前启动代理程序，这就限制了这个方法的应用，因为在线上系统，一旦一个系统出问题，不可能重启后在加上代理程序来定位问题，或者在应用程序启动时就加上代理程序，但代理程序通常会修改class字节码来扩展功能，可能会对线上系统性能有影响。在Java SE 6里面instrumentation 被赋予了更强大的功能：启动后的 instrument、本地代码（native code）instrument，以及动态改变classpath 等等。</p>
+<h2 id="java-se-5方式">Java SE 5方式</h2>
+<p><a href="http://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html" target="_blank" rel="external">JVM TI</a>是一个编程接口，通过它可以监控和控制应用程序在JVM中的执行，提供了一些接口，包括调试，监控，线程分析，覆盖率分析等工具，Java 的Instrumentation就是JVM TI的Java实现，在Java SE 5中，使用代理程序需要在类里边有一个premain方法，有两种定义</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String agentArgs, Instrumentation inst)</span></span>;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String agentArgs)</span></span>;</div></pre></td></tr></table></figure>
+<p>其中上边的有更高的优先级</p>
+<p>在应用启动时启动代理程序，需要用如下的命令</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java -javaagent:jarpath option java_main_class</div></pre></td></tr></table></figure>
+<p>并且jar包有要求，需要在manifest文件中加上Premain-Class属性，值为代理类的全路径</p>
+<p>下边通过一个简单的例子来演示应用，通过它来演示JVM加载了哪些类</p>
+<ul>
+<li>首先定义代理类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.zlq;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.lang.instrument.ClassFileTransformer;</div><div class="line"><span class="keyword">import</span> java.lang.instrument.IllegalClassFormatException;</div><div class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</div><div class="line"><span class="keyword">import</span> java.security.ProtectionDomain;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by liqing.zhan on 2017/3/9.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoadClassInst</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String agentArgs, Instrumentation inst)</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"LoadClassInst premain start"</span>);</div><div class="line">        inst.addTransformer(<span class="keyword">new</span> LoadClassTransformer());</div><div class="line">        System.out.println(<span class="string">"LoadClassInst premain end"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoadClassTransformer</span> <span class="keyword">implements</span> <span class="title">ClassFileTransformer</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined,</div><div class="line">                            ProtectionDomain protectionDomain, <span class="keyword">byte</span>[] classfileBuffer)</div><div class="line">            <span class="keyword">throws</span> IllegalClassFormatException &#123;</div><div class="line">        System.out.println(String.format(<span class="string">"load class %s"</span>, className));</div><div class="line">        <span class="keyword">return</span> classfileBuffer;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>定义应用程序</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.zlq;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by liqing.zhan on 2017/3/9.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        System.out.println(Main.class.getSimpleName());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>将代理类打成jar包，pom文件如下</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></div><div class="line">         <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</div><div class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.zlq<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>test<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://maven.apache.org<span class="tag">&lt;/<span class="name">url</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-jar-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;<span class="name">archive</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;<span class="name">manifest</span>&gt;</span></div><div class="line">                            <span class="tag">&lt;<span class="name">addClasspath</span>&gt;</span>true<span class="tag">&lt;/<span class="name">addClasspath</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;<span class="name">manifestEntries</span>&gt;</span></div><div class="line">                            <span class="tag">&lt;<span class="name">Premain-Class</span>&gt;</span></div><div class="line">                                com.zlq.LoadClassInst</div><div class="line">                            <span class="tag">&lt;/<span class="name">Premain-Class</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;/<span class="name">manifestEntries</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;/<span class="name">archive</span>&gt;</span></div><div class="line">                <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div><div class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></div></pre></td></tr></table></figure>
+<ul>
+<li>执行main方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">$ java  -javaagent:test-<span class="number">1.0</span>-SNAPSHOT.jar com.zlq.Main</div><div class="line">LoadClassInst premain start</div><div class="line">LoadClassInst premain end</div><div class="line">load <span class="class"><span class="keyword">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">invoke</span>/<span class="title">MethodHandleImpl</span></span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">invoke</span>/<span class="title">MemberName</span>$<span class="title">Factory</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">invoke</span>/<span class="title">LambdaForm</span>$<span class="title">NamedFunction</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">invoke</span>/<span class="title">MethodType</span>$<span class="title">ConcurrentWeakInternSet</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">invoke</span>/<span class="title">MethodHandleStatics</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">invoke</span>/<span class="title">MethodHandleStatics</span>$1</div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">invoke</span>/<span class="title">MethodTypeForm</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">invoke</span>/<span class="title">Invokers</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">invoke</span>/<span class="title">MethodType</span>$<span class="title">ConcurrentWeakInternSet</span>$<span class="title">WeakEntry</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">Void</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">IllegalAccessException</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">sun</span>/<span class="title">misc</span>/<span class="title">PostVMInitHook</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">sun</span>/<span class="title">launcher</span>/<span class="title">LauncherHelper</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">com</span>/<span class="title">zlq</span>/<span class="title">Main</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">sun</span>/<span class="title">launcher</span>/<span class="title">LauncherHelper</span>$<span class="title">FXHelper</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">Class</span>$<span class="title">MethodArray</span></div><div class="line"><span class="title">Main</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">Shutdown</span></div><div class="line"><span class="title">load</span> <span class="title">class</span> <span class="title">java</span>/<span class="title">lang</span>/<span class="title">Shutdown</span>$<span class="title">Lock</span></div></pre></td></tr></table></figure>
+<h2 id="java-attach-api">Java Attach API</h2>
+<p>使用<a href="https://blogs.oracle.com/CoreJavaTechTips/entry/the_attach_api" target="_blank" rel="external">Java Attach API</a> 可以获取目标JVM的一个引用，通过这个引用，就可以操纵JVM。 在两个包下边，com.sun.tools.attach和com.sun.tools.attach.spi，VirtualMachine这个类标示一个JVM实例，需要通过进程ID来关联，拿到JVM的实例，就可以调用loadAgent(age)来扩展功能，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">VirtualMachine vm = VirtualMachine.attach (processid);</div><div class="line">String agent = ...</div><div class="line">vm.loadAgent(agent);</div></pre></td></tr></table></figure>
+<p>VirtualMachine也提供了一个遍历所有JVM实例的方法,例如</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">String name = ...</div><div class="line">List vms = VirtualMachine.list();</div><div class="line"><span class="keyword">for</span> (VirtualMachineDescriptor vmd: vms) &#123;</div><div class="line">    <span class="keyword">if</span> (vmd.displayName().equals(name)) &#123;</div><div class="line">        VirtualMachine vm = VirtualMachine.attach(vmd.id());</div><div class="line">        String agent = ...</div><div class="line">        vm.loadAgent(agent);</div><div class="line">        <span class="comment">// ...</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在调用完loadAgent后需要调用deatch来取消附着，<a href="https://blogs.oracle.com/CoreJavaTechTips/entry/the_attach_api" target="_blank" rel="external">文档</a>有一些例子可以学习</p>
+<h2 id="java-se-6-方式">JAVA SE 6 方式</h2>
+<p>通过上边提到的Attach技术，可以在运行时动态的运行代理程序，就可以达到不用重启应用程序来扩展功能，具体方法跟Java SE 5差不多，也是需要一个代理jar包，需要写一个代理类，只不过这个类需要有一个agentmain方法，方法的定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">agentmain</span> <span class="params">(String agentArgs, Instrumentation inst)</span></span>;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">agentmain</span> <span class="params">(String agentArgs)</span></span>;</div></pre></td></tr></table></figure>
+<p>其中，上边的优先级更高</p>
+<p>在manifest中定义一个Agent-Class属性，通常在代理jar保重，Agent-Class和Premain-Class都有且都是一个类，这样在两种情况下都可以用，下面还是用一个简单的例子来说明</p>
+<ul>
+<li>编写代理程序</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.zlq;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.lang.instrument.ClassFileTransformer;</div><div class="line"><span class="keyword">import</span> java.lang.instrument.IllegalClassFormatException;</div><div class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</div><div class="line"><span class="keyword">import</span> java.security.ProtectionDomain;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by liqing.zhan on 2017/3/9.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoadClassInst</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String agentArgs, Instrumentation inst)</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"LoadClassInst premain start"</span>);</div><div class="line">        inst.addTransformer(<span class="keyword">new</span> LoadClassTransformer());</div><div class="line">        System.out.println(<span class="string">"LoadClassInst premain end"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">agentmain</span><span class="params">(String agentArgs, Instrumentation inst)</span> </span>&#123;</div><div class="line">        Class[] classes = inst.getAllLoadedClasses();</div><div class="line">        <span class="keyword">for</span> (Class cls : classes) &#123;</div><div class="line">            System.out.println(cls.getName());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoadClassTransformer</span> <span class="keyword">implements</span> <span class="title">ClassFileTransformer</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined,</div><div class="line">                            ProtectionDomain protectionDomain, <span class="keyword">byte</span>[] classfileBuffer)</div><div class="line">            <span class="keyword">throws</span> IllegalClassFormatException &#123;</div><div class="line">        System.out.println(String.format(<span class="string">"load class %s"</span>, className));</div><div class="line">        <span class="keyword">return</span> classfileBuffer;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>编写应用程序</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.zlq;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by liqing.zhan on 2017/3/9.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line">        System.out.println(Main.class.getSimpleName());</div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            TimeUnit.SECONDS.sleep(<span class="number">4</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>编写attach程序</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.zlq;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.sun.tools.attach.AgentInitializationException;</div><div class="line"><span class="keyword">import</span> com.sun.tools.attach.AgentLoadException;</div><div class="line"><span class="keyword">import</span> com.sun.tools.attach.AttachNotSupportedException;</div><div class="line"><span class="keyword">import</span> com.sun.tools.attach.VirtualMachine;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by liqing.zhan on 2017/3/10.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AttachJVM</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, AttachNotSupportedException,</span></div><div class="line">            AgentLoadException, AgentInitializationException &#123;</div><div class="line">        String processId = args[<span class="number">0</span>];</div><div class="line">        String agentJarPath = args[<span class="number">1</span>];</div><div class="line">        VirtualMachine virtualMachine = VirtualMachine.attach(processId);</div><div class="line">        virtualMachine.loadAgent(agentJarPath);</div><div class="line">        virtualMachine.detach();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>先执行应用程序，拿到pid，再运行attach程序</p>
+<h2 id="应用">应用</h2>
+<p>像btrace greps 等工具都是应用Instrument技术，Google的dapper论文提到的分布式追踪技术也可以应用，动态的生成链路代码，打印日志，后台日志收集汇总，前台展示</p>
+<h2 id="参考文献">参考文献</h2>
+<ul>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-lo-jse61/index.html" target="_blank" rel="external">Java SE 6 新特性: Instrumentation 新功能</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-lo-instrumentation/" target="_blank" rel="external">Java 5 特性 Instrumentation 实践</a></li>
+<li><a href="http://jiangbo.me/blog/2012/02/21/java-lang-instrument/" target="_blank" rel="external">java.lang.instrument笔记</a></li>
+<li><a href="http://www.infoq.com/cn/articles/javaagent-illustrated" target="_blank" rel="external">JVM源码分析之javaagent原理完全解读</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/08/java  split with 竖线/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jingchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎光临我的技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/02/08/java  split with 竖线/" itemprop="url">
+                  Java中用竖线|对字符串split
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-08T14:14:40+08:00">
+                2017-02-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/08/java  split with 竖线/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/08/java  split with 竖线/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在Java中，对字符串进行spilt要特别注意，split里边的参数是一个正则表达式，如果参数是|，因为|在正则表达式里边是一个特殊字符，所以需要进行转义，否则结果跟预期的不符，例如</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Split</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String phone = <span class="string">"123456|789"</span>;</div><div class="line">        List&lt;String&gt; phones = Arrays.asList(phone.split(<span class="string">"|"</span>));</div><div class="line">        System.out.println(phones);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>输出结果是： &gt; [1, 2, 3, 4, 5, 6, |, 7, 8, 9]<br>
+而不是我们期望的[123456, 789]</p>
+<h2 id="原因">原因</h2>
+<p>因为|在正则表达式中表示或者的意思，上边代码的意思是用空字符串或者空字符串进行分割，即同phone.split(“”)一样</p>
+<h2 id="解决">解决</h2>
+<p>只需对|进行转义即可，因为，需要用\\|对|进行转义<br>
+或者用Pattern.quote(“|”)来给加上转义字符</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Split</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String phone = <span class="string">"123456|789"</span>;</div><div class="line">        <span class="comment">//List&lt;String&gt; phones = Arrays.asList(phone.split"\\|");</span></div><div class="line">        List&lt;String&gt; phones = Arrays.asList(phone.split(Pattern.quote(<span class="string">"|"</span>)));</div><div class="line">        System.out.println(phones);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/23/test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jingchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎光临我的技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/01/23/test/" itemprop="url">
+                  test
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-23T10:40:53+08:00">
+                2017-01-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/test/" itemprop="url" rel="index">
+                    <span itemprop="name">test</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/01/23/test/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/23/test/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="hahaha">hahaha</h1>
+<p><span class="math display">\[
+  \begin{matrix}
+   1 &amp; 2 &amp; 3 \\
+   4 &amp; 5 &amp; 6 \\
+   7 &amp; 8 &amp; 9
+  \end{matrix} \tag{1}
+\]</span></p>
+<span class="math inline">\(\left\{\begin{matrix} b_{1}=p_{11}a_{1}+p_{21}a_{2}+\cdots +p_{n1}a_{n}\\ b_{2}=p_{12}a_{1}+p_{22}a_{2}+\cdots +p_{n2}a_{n}\\ \cdots \\ b_{n}=p_{1n}a_{1}+p_{2n}a_{2}+\cdots +p_{nn}a_{n} \end{matrix}\right.\)</span>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/02/first/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -460,7 +980,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -482,7 +1002,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -96,7 +96,7 @@
 <meta property="og:site_name" content="欢迎光临我的技术博客">
 <meta property="og:description" content="sigmoid是一个S型函数，它的函数图像如下    可以看到他是一个单调递增函数，值域是[0,1]，函数定义为 \[ f(t)=\frac1{1+e^{-t}}  \tag{1} \] 在机器学习中，sigmoid常作为激活函数或者非线性变换函数，首先看看它的导数 \[ f&amp;#39;(t)=(\frac1{1+e^{-t}})&amp;#39;=\frac{1}{1+e^{-t}}*\fr">
 <meta property="og:image" content="http://yoursite.com/2017/07/07/img/sigmoid_pic.jpg">
-<meta property="og:updated_time" content="2017-07-08T15:46:10.474Z">
+<meta property="og:updated_time" content="2017-09-04T11:33:55.050Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="log loss及sigmoid函数">
 <meta name="twitter:description" content="sigmoid是一个S型函数，它的函数图像如下    可以看到他是一个单调递增函数，值域是[0,1]，函数定义为 \[ f(t)=\frac1{1+e^{-t}}  \tag{1} \] 在机器学习中，sigmoid常作为激活函数或者非线性变换函数，首先看看它的导数 \[ f&amp;#39;(t)=(\frac1{1+e^{-t}})&amp;#39;=\frac{1}{1+e^{-t}}*\fr">
@@ -373,6 +373,20 @@ f&#39;(t)=(\frac1{1+e^{-t}})&#39;=\frac{1}{1+e^{-t}}*\frac{e^{-t}}{1+e^{-t}}=(1-
 <p>如果不考虑y的取值，可以写成 <span class="math display">\[\mathbb{P}(y|z)  =\sigma(z)^y(1-\sigma(z))^{1-y} \tag{14}\]</span> 而由于sigmoid的性质，<span class="math inline">\(1-\sigma(z)=\sigma(-z)\)</span>，因此，如果<span class="math inline">\(y\in(-1,1)\)</span>，在不考虑y的取值时，概率分布函数可以写成 <span class="math display">\[
 \mathbb{P}(y|z)=\sigma(yz) \tag{15}
 \]</span> 即概率分布函数可以写成 <span class="math display">\[\mathbb{P}(y|z)  =\frac{1}{1+e^{-yz}} \tag{16}\]</span></p>
+<h2 id="softmax对应的概率公式及求导">softmax对应的概率公式及求导</h2>
+<p>上边说的logloss是二分类的损失函数，也就是逻辑回归用的损失函数，而对于多分类的情形，需要用softmax，相应的概率密度函数也要做相应的修改，如下： 假设分类为<span class="math inline">\(m\)</span>类，对于每一类有一个<span class="math inline">\(n\)</span>维的参数，即对于<span class="math inline">\(Y=k\)</span>，它的参数为<span class="math inline">\(w_{k1},w_{k2},\cdots,w_{kn}\)</span>，则定义它的概率密度函数为：</p>
+<p><span class="math display">\[\mathbb{P}(Y=j|x) = \frac{e^{W_jX}}{\sum_{i=1}^{m}e^{W_iX}}\]</span>，其中<span class="math display">\[W_jX=w_{j1}x_1+w_{j2}x_2+\cdots+w_{jn}x_n\]</span>， 对于softmax，通常用logloss损失函数，公式为 <span class="math display">\[L(y,y&#39;)=\sum_{1}^{m}{-y_{i}log(y’_{i})}\]</span> y为<span class="math inline">\((m,1)\)</span>的列向量，假设一个样本为i类，则<span class="math inline">\(y=[0,0,\cdots,1,\cdots,0]\)</span>,第<span class="math inline">\(i\)</span>维为1</p>
+<p>下面讨论导数,假设样本为<span class="math inline">\(i\)</span>类，则有对于<span class="math inline">\(j=i\)</span>，求导得 <span class="math display">\[
+f&#39;(W_jX)=-\frac{1}{f(W_iX)}\frac{\partial_{\mathbb{P}(Y=j|x)}}{\partial_{Wj}}
+=-\frac{1}{f(W_iX)}(\frac{e^{W_jX}*X}{\sum_{i=1}^{k}e^{W_{i}X}}-\frac{e^{W_jX}*e^{W_jX}*X}{\left (\sum_{i=1}^{k}e^{W_iX} \right)^2})
+=(f(W_jX-1)X
+\]</span> 而对于<span class="math inline">\(j != i\)</span>的情况， <span class="math display">\[
+f&#39;(W_jX)=-\frac{1}{f(W_iX)}\frac{\partial_{\mathbb{P}(Y=i|x)}}{\partial_{Wj}}
+=-\frac{1}{f(W_iX)}(-\frac{e^{W_jX}*e^{W_iX}*X}{\left (\sum_{i=1}^{k}e^{W_iX} \right)^2})
+=f(W_jX)X
+\]</span> 我们注意到<span class="math inline">\(y_i=1,y_j=0\)</span>,因此可以写成通用的格式，即 <span class="math display">\[
+f&#39;(W_iX)=(f(W_iX)-y_i)X
+\]</span> 可以看到，跟二分类的逻辑回归是一致的。</p>
 
       
     </div>
@@ -408,6 +422,10 @@ f&#39;(t)=(\frac1{1+e^{-t}})&#39;=\frac{1}{1+e^{-t}}*\frac{e^{-t}}{1+e^{-t}}=(1-
       
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/11/gradient-boost-machine/" rel="next" title="gradient boost machine理解">
+                <i class="fa fa-chevron-left"></i> gradient boost machine理解
+              </a>
             
           </div>
 
@@ -468,8 +486,17 @@ f&#39;(t)=(\frac1{1+e^{-t}})&#39;=\frac{1}{1+e^{-t}}*\frac{e^{-t}}{1+e^{-t}}=(1-
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -484,7 +511,7 @@ f&#39;(t)=(\frac1{1+e^{-t}})&#39;=\frac{1}{1+e^{-t}}*\frac{e^{-t}}{1+e^{-t}}=(1-
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -506,7 +533,7 @@ f&#39;(t)=(\frac1{1+e^{-t}})&#39;=\frac{1}{1+e^{-t}}*\frac{e^{-t}}{1+e^{-t}}=(1-
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -531,6 +558,22 @@ f&#39;(t)=(\frac1{1+e^{-t}})&#39;=\frac{1}{1+e^{-t}}*\frac{e^{-t}}{1+e^{-t}}=(1-
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#softmax对应的概率公式及求导"><span class="nav-number">1.</span> <span class="nav-text">softmax对应的概率公式及求导</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

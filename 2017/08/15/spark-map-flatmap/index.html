@@ -72,7 +72,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="spark," />
 
 
 
@@ -88,17 +88,17 @@
 
 
 
-<meta name="description" content="今天想装一个软件，由于这个软件需要依赖glibc&amp;gt;=2.14，当前系统的glibc最大是2.12，所以就下载源码、编译升级了，然后就在命令行下执行了如下命令 12345sudo mv /lib64/libc.so.6 /lib64/libc.so.6.baksudo ln -s /lib64/libc-2.14.so /lib64/libc.so.6结果报错：error while loa">
-<meta name="keywords">
+<meta name="description" content="spark中map是一对一的变换，也就是一个元素经过map变换后还是一个元素，而flatMap是扁平化变换也就是一对多变化，flatMap返回的是一个array,但输出到下个变换时，会把array拆成多个单元素来处理，下面举一个例子 1234567891011121314151617181920212223242526272829303132333435363738394041424344454">
+<meta name="keywords" content="spark">
 <meta property="og:type" content="article">
-<meta property="og:title" content="误删linux下的libc.so.6">
-<meta property="og:url" content="http://yoursite.com/2017/06/22/libc/index.html">
+<meta property="og:title" content="spark map flatmap区别联系">
+<meta property="og:url" content="http://yoursite.com/2017/08/15/spark-map-flatmap/index.html">
 <meta property="og:site_name" content="欢迎光临我的技术博客">
-<meta property="og:description" content="今天想装一个软件，由于这个软件需要依赖glibc&amp;gt;=2.14，当前系统的glibc最大是2.12，所以就下载源码、编译升级了，然后就在命令行下执行了如下命令 12345sudo mv /lib64/libc.so.6 /lib64/libc.so.6.baksudo ln -s /lib64/libc-2.14.so /lib64/libc.so.6结果报错：error while loa">
-<meta property="og:updated_time" content="2017-06-22T10:03:46.615Z">
+<meta property="og:description" content="spark中map是一对一的变换，也就是一个元素经过map变换后还是一个元素，而flatMap是扁平化变换也就是一对多变化，flatMap返回的是一个array,但输出到下个变换时，会把array拆成多个单元素来处理，下面举一个例子 1234567891011121314151617181920212223242526272829303132333435363738394041424344454">
+<meta property="og:updated_time" content="2017-08-15T10:05:42.832Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="误删linux下的libc.so.6">
-<meta name="twitter:description" content="今天想装一个软件，由于这个软件需要依赖glibc&amp;gt;=2.14，当前系统的glibc最大是2.12，所以就下载源码、编译升级了，然后就在命令行下执行了如下命令 12345sudo mv /lib64/libc.so.6 /lib64/libc.so.6.baksudo ln -s /lib64/libc-2.14.so /lib64/libc.so.6结果报错：error while loa">
+<meta name="twitter:title" content="spark map flatmap区别联系">
+<meta name="twitter:description" content="spark中map是一对一的变换，也就是一个元素经过map变换后还是一个元素，而flatMap是扁平化变换也就是一对多变化，flatMap返回的是一个array,但输出到下个变换时，会把array拆成多个单元素来处理，下面举一个例子 1234567891011121314151617181920212223242526272829303132333435363738394041424344454">
 
 
 
@@ -126,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/06/22/libc/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/08/15/spark-map-flatmap/"/>
 
 
 
 
 
-  <title> 误删linux下的libc.so.6 | 欢迎光临我的技术博客 </title>
+  <title> spark map flatmap区别联系 | 欢迎光临我的技术博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -271,7 +271,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/22/libc/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/15/spark-map-flatmap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="jingchen">
@@ -292,7 +292,7 @@
             
             
               
-                误删linux下的libc.so.6
+                spark map flatmap区别联系
               
             
           </h1>
@@ -305,8 +305,8 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-22T17:30:01+08:00">
-                2017-06-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-15T15:16:24+08:00">
+                2017-08-15
               </time>
             
 
@@ -324,8 +324,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/06/22/libc/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/06/22/libc/" itemprop="commentCount"></span>
+                <a href="/2017/08/15/spark-map-flatmap/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/08/15/spark-map-flatmap/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -350,15 +350,8 @@
       
 
       
-        <p>今天想装一个软件，由于这个软件需要依赖glibc&gt;=2.14，当前系统的glibc最大是2.12，所以就下载源码、编译升级了，然后就在命令行下执行了如下命令</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">sudo mv /lib64/libc.so.6 /lib64/libc.so.6.bak</div><div class="line">sudo ln -s /lib64/libc-2.14.so /lib64/libc.so.6</div><div class="line"></div><div class="line">结果报错：</div><div class="line">error while loading shared libraries: libc.so.6: cannot open shared object file: No such file or directory</div></pre></td></tr></table></figure>
-<p>此时，大部分的命令都执行不了了，只能执行一些简单的如，cd 等命令，而且ssh也没法登陆了，如果你是远程ssh登陆的服务器，执行完上边的命令后，链接还是存在的，如果是以root用户登陆的，则很好回复，只需要用</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LD_PRELOAD=/lib64/libc-2.14.so ln -s libc-2.14.so libc.so.6</div></pre></td></tr></table></figure>
-<p>就可以建立软连接了，原理就是linux调用so的库文件时，搜素路径为当前路径，再是系统lib目录。但如果设置LD_PRELOAD了后,库加载的顺序就改为LD_PRELOAD ，当前路径，再是系统lib目录。</p>
-<p>或者可以执行</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ldconfig</div></pre></td></tr></table></figure>
-<p>来恢复，他会重新建一个软连接，来链接你重命名的那个软链 参考https://stackoverflow.com/questions/12249547/how-to-recover-after-deleting-the-symbolic-link-libc-so-6 如果不是root用户，就乖乖的用光盘修复吧，暂时没查到相关的修复方法 https://superuser.com/questions/267096/how-to-restore-lib-libc-so-6</p>
-<p>http://wbwk2005.blog.51cto.com/2215231/415185</p>
+        <p>spark中map是一对一的变换，也就是一个元素经过map变换后还是一个元素，而flatMap是扁平化变换也就是一对多变化，flatMap返回的是一个array,但输出到下个变换时，会把array拆成多个单元素来处理，下面举一个例子</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">scala&gt; <span class="keyword">val</span> bb = sc.textFile(<span class="string">"/home/user/liqing.zhan/bb"</span>)</div><div class="line">scala&gt; bb.collect.foreach(println)</div><div class="line"></div><div class="line">abc</div><div class="line">dd aa cc de er ad as d s as  d  d sdf as d</div><div class="line">df</div><div class="line">sa</div><div class="line">dd ee e d g a ew sa</div><div class="line">df</div><div class="line"></div><div class="line">scala&gt; bb.map(_.split(<span class="string">" "</span>)).collect.foreach(println)</div><div class="line">[<span class="type">Ljava</span>.lang.<span class="type">String</span>;@<span class="number">3</span>ad9f06a</div><div class="line">[<span class="type">Ljava</span>.lang.<span class="type">String</span>;@<span class="number">72</span>cb5d7d</div><div class="line">[<span class="type">Ljava</span>.lang.<span class="type">String</span>;@<span class="number">19</span>b89a23</div><div class="line">[<span class="type">Ljava</span>.lang.<span class="type">String</span>;@<span class="number">6</span>d1a4522</div><div class="line">[<span class="type">Ljava</span>.lang.<span class="type">String</span>;@<span class="number">1835</span>b24b</div><div class="line">[<span class="type">Ljava</span>.lang.<span class="type">String</span>;@<span class="number">303</span>d2485</div><div class="line"></div><div class="line">scala&gt; bb.flatMap(_.split(<span class="string">"\\w+"</span>)).collect.foreach(println)</div><div class="line"></div><div class="line">abc</div><div class="line">dd</div><div class="line">aa</div><div class="line">cc</div><div class="line">de</div><div class="line">er</div><div class="line">ad</div><div class="line">as</div><div class="line">d</div><div class="line">s</div><div class="line">as</div><div class="line">d</div><div class="line">d</div><div class="line">sdf</div><div class="line">as</div><div class="line">d</div><div class="line">df</div><div class="line">sa</div><div class="line">dd</div><div class="line">ee</div><div class="line">e</div><div class="line">d</div><div class="line">g</div><div class="line">a</div><div class="line">ew</div><div class="line">sa</div><div class="line">df</div><div class="line"></div><div class="line">word count</div><div class="line">scala&gt; bb.flatMap(_.split(<span class="string">"\\W+"</span>)).map(line=&gt;(line,<span class="number">1</span>)).reduceByKey(_+_).sortByKey().collect.foreach(println)</div><div class="line"></div><div class="line">a.map(_.split(<span class="string">","</span>)).map(item =&gt; (<span class="string">s"<span class="subst">$&#123;item(0)&#125;</span>-<span class="subst">$&#123;item(1)&#125;</span>"</span>, item(<span class="number">2</span>))).groupByKey.map(item =&gt; (item._1, item._2.toList.sortWith(_.toInt&lt;_.toInt))).flatMap(item=&gt;item._2.map(x=&gt;(item._1,x))).collect.foreach(println)</div></pre></td></tr></table></figure>
 
       
     </div>
@@ -386,6 +379,12 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/spark/" rel="tag"># spark</a>
+          
+        </div>
+      
 
       
         
@@ -395,18 +394,14 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/06/26/install-lightgbm/" rel="next" title="编译安装微软开源lightgbm工具">
-                <i class="fa fa-chevron-left"></i> 编译安装微软开源lightgbm工具
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/04/24/merge-small-file/" rel="prev" title="hdfs小文件合并存在的问题">
-                hdfs小文件合并存在的问题 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/07/31/mysql-row-colome-transpose/" rel="prev" title="mysql row colome transpose">
+                mysql row colome transpose <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -433,8 +428,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2017/06/22/libc/"
-           data-title="误删linux下的libc.so.6" data-url="http://yoursite.com/2017/06/22/libc/">
+      <div class="ds-thread" data-thread-key="2017/08/15/spark-map-flatmap/"
+           data-title="spark map flatmap区别联系" data-url="http://yoursite.com/2017/08/15/spark-map-flatmap/">
       </div>
     
   </div>
